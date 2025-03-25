@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMO SYSTEM</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/EDS LOGO.png') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    
+
+    <style>
+        /* Global Styles */
+        body {  
+            font-family: 'Century Gothic', sans-serif;  
+            color: #003366;  
+            background-color: #f8f9fa;  
+            margin: 0;  
+            padding: 0;  
+            scroll-behavior: smooth;  
+        }
+
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+        }
+
+        p {
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background-color: #003366;
+            color: white;
+            padding: 0 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-section a {
+            margin: 10px;
+            padding: 15px 30px;
+            border-radius: 50px;
+        }
+
+
+
+        /* Features Section */
+        .features-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .features-section h2 {
+            margin-bottom: 40px;
+        }
+
+        .btn-primary{
+            color: white;
+            background-color: #003366;
+            width: max-content;
+            margin: 8px 0;
+            padding: 5px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            margin: auto;
+            border: 3px solid #003366;
+            font-size: 1rem;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 500;
+
+        }
+        .btn-primary:hover{
+            background-color: white;
+            color: #003366;
+            border: 3px solid #003366;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+        .feature-card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background-color: #f0f0f0;
+            padding: 60px 0;
+        }
+
+        .testimonials h2 {
+            margin-bottom: 40px;
+        }
+
+        .testimonial {
+            margin: 20px 0;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 60px 0;
+        }
+
+        .pricing-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            margin-bottom: 20px;
+        }
+
+
+        /* Footer */
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .footer a {
+            color: #aaa;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        .form-group label{
+            font-weight: bold;
+        }
+        .modal-header{
+            color: #003366;
+            font-weight: bold;
+        }
+
+        .modal-footer{
+            gap: 10px;
+        }
+        .center-container {
+    place-items: center;
+}
+
+/* Full-screen overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    font-size: 18px;
+    z-index: 9999;
+}
+
+/* Fancy spinner */
+.loading-spinner {
+    border: 8px solid #f3f3f3; /* Light grey background color */
+    border-top: 8px solid #003366; /* Blue spinner color */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+/* Animation for spinning */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    </style>
+</head>
+
+<body>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div> <br>
+        <p style="font-weight: 700;">Attempting to Log You In, Please Wait...</p>
+    </div>
+
+    <div id="loadingOverlaysignup" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div> <br>
+        <p style="font-weight: 700;">Attempting to Create an LMS Profile or Your Company, Please Wait...</p>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+
+        <div class="container" style="padding: 15px;">
+            <h3 style="text-align: left;"><img src="{{ url_for('static', filename='images/EDS LOGO.png') }}"  alt="Logo" class="logo" style="width: 150px;">TMO SYSTEM</h3>
+        </div>
+    </section>
+
+<section id="features" class="d-flex align-items-center justify-content-center" style="min-height: 71vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5"> <!-- Adjust width to better fit form -->
+                <div class="feature-card">
+                    <form action="/login" method="POST" class="p-4 shadow rounded" style="background-color: white; max-width: 400px; margin: auto;">
+                        <div class="modal-header d-flex justify-content-center">
+                            <h5 class="modal-title" id="loginModalLabel" style="font-weight: bolder;">
+                                <i class="bi bi-door-open"></i> LOGIN
+                            </h5>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="usernamelogin">Username</label>
+                                <input type="text" name="usernamelogin"  id="usernamelogin" class="form-control" placeholder="Enter Your Username" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="passwordField">Password</label>
+                                <div class="input-group">
+                                    <input type="password" name="passwordlogin" id="passwordField" class="form-control" placeholder="Enter Your Password" required>
+                                    <button type="button" id="togglePassword" style="background-color: #003366; color: white; border: none; width: 15%;">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" id="userlogin" class="btn btn-primary btn-block shadow mt-3 w-50">Login</button>
+                            <div class="text-center mt-3">
+                                <span>Forgot Your Password?</span>
+                                <button type="button" class="btn btn-primary shadow mt-2">Reset Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2025 Echelon Equipment (Pvt) Ltd. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+<!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#userlogin').on('click', function(e) {
+                e.preventDefault();  // Prevent the default form submission behavior
+
+                // Get the values of the form fields
+                const username = $('input[name="usernamelogin"]').val().trim();
+                const password = $('input[name="passwordlogin"]').val().trim();
+
+                // Check if both email and password are provided
+                if (!username || !password) {
+                    alert('Please enter both username and password.');
+                    return;  // Stop execution if either field is empty
+                }
+
+                // Show loading overlay before making the AJAX request
+                const formData = {
+                    usernamelogin: username,
+                    passwordlogin: password
+                };
+
+                console.log("Form Data Sent:", formData);  // Debugging log to check what data is being sent
+                $('#loadingOverlay').show();
+
+                $('#userlogin').closest('form').submit();
+
+            });
+        });
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('passwordField');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            // Toggle icon
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        });
+
+    </script>
+</body>
+
+</html>

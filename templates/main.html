@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TMO SYSTEM DASHBOARD</title>
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/EDS LOGO.png') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        
+        <style>
+        /* Main Styling */
+        body {
+            font-family: 'Century Gothic', sans-serif;  
+            background: linear-gradient(to right, #f0f2f5, #e9f1fb);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #003366;
+            color: #fff;
+            padding-top: 40px;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+            transition: width 0.3s;
+        }
+
+        .sidebar:hover {
+            width: 270px;
+        }
+
+        .sidebar h5 {
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .btn {
+            color: #003366;
+            background-color: #fff;
+            width: 150px;
+            margin: 5px 0;
+            padding: 8x;
+            border: 3px solid #003366;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .sidebar .btn:hover {
+            background-color: #003366;
+            color: #fff;
+            border: 3px solid white;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary{
+            color: white;
+            background-color: #003366;
+            width: 15%;
+            margin: 8px 0;
+            padding: 5px;
+            border-radius: 15px;
+            border: 3px solid #003366;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 800;
+
+        }
+        .btn-primary:hover{
+            background-color: white;
+            color: #003366;
+            border: 3px solid #003366;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary10{
+            color: #003366;
+            background-color: white;
+            width: 15%;
+            margin: 8px 0;
+            padding: 5px;
+            border-radius: 8px;
+            border: 3px solid #003366;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 600;
+
+        }
+        .btn-primary10:hover{
+            background-color: #e9f1fb;
+            color: #003366;
+            border: 3px solid #003366;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary2{
+            color: white;
+            background-color: #003366;
+            width: 37%;
+            margin: 8px 0;
+            padding: 6px;
+            border-radius: 8px;
+            border: 3px solid #003366;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 500;
+
+        }
+        .btn-primary2:hover{
+            background-color: white;
+            color: #003366;
+            border: 3px solid #003366;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary9{
+            color: white;
+            background-color: #003366;
+            margin: 8px 0;
+            padding: 5px;
+            border-radius: 8px;
+            border: 3px solid #003366;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 500;
+
+        }
+        .btn-primary9:hover{
+            background-color: white;
+            color: #003366;
+            border: 3px solid #003366;
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary3{
+            color: white;
+            background-color: #003366;
+            width: 100%;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            border-radius: 8px;
+            border: 3px solid #003366;
+            font-size: 13px;
+            transition: background 0.3s;
+            text-align: center;
+            font-weight: 500;
+
+        }
+        .form-control-blue {
+            background-color: #00336611; /* Example */
+            border: 1px solid #ccc;
+            appearance: auto; /* Ensure native dropdown appearance */
+        }
+
+
+        .btn-primary3:hover{
+            background-color: white;
+            color: #003366;
+            border: 3px solid #003366;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+            background-color: #ffffff;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: #e9f1fb;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .current-date {
+            color: #003366;
+            font-weight: 900;
+            font-size: smaller;
+            font-size: 1rem;
+        }
+
+        .employeetag {
+            color: #003366;;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+
+        }
+
+        /* Tab Styling */
+        .nav-tabs .nav-link {
+            color: #003366;
+            font-weight: 600;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px 8px 0 0;
+            background: #e9f1fb;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #ffffff;
+            background-color: #003366;
+            font-weight: 800;
+        }
+
+        /* Card Styling */
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #ffffff;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            }
+        .modal-header{
+            background-color: #003366;
+            color: white;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px; /* Increase vertical spacing between fields */
+            }
+
+        .btn-center {
+            display: flex;
+            justify-content: center;
+            justify-content: space-between; 
+            gap: 10px;
+            }
+
+        .form-control-blue::after {
+            content: '\25BC'; /* Unicode for downwards triangle */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white; /* Arrow color */
+            font-size: 18px;
+        }
+
+        /* Style for disabled option (making it grey) */
+        .form-control-blue option:disabled {
+            background-color: #A9A9A9; /* Grey background */
+            color: #D3D3D3; /* Grey text color */
+        }
+
+        .table-theme {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto; /* Allow columns to adjust based on content */
+
+        }
+
+        .table-theme th {
+            background-color: #003366;
+            color: white;
+            text-align: center !important;
+            vertical-align: middle !important;
+            padding: 2px;
+            font-weight: bold;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+
+
+        .table-theme td {
+            font-weight: 600;
+            padding: 0px;
+            color: #003366;
+            text-align: center;
+            white-space: nowrap; /* Prevent text wrapping */
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .container2 {
+            font-size: 13px;
+            margin-top: -2rem;
+        }
+        /* Custom scrollbar styling */
+        .container2::-webkit-scrollbar {
+            width: 12px; /* Width of the scrollbar */
+        }
+
+        .container2::-webkit-scrollbar-thumb {
+            background-color: #003366; /* Scrollbar thumb color */
+            border-radius: 5px; /* Rounded corners for thumb */
+        }
+
+        .container2::-webkit-scrollbar-thumb:hover {
+            background-color: #e9f1fb;
+            box-shadow: inset 0 0 0 3px #003366; /* Simulates a border */
+        }
+
+        .container2::-webkit-scrollbar-track {
+            background-color: #f0f0f0; /* Scrollbar track color */
+            border-radius: 5px; /* Rounded corners for track */
+        }
+        .form-group label{
+            font-weight: bold;
+        }
+        /* For WebKit-based browsers (Chrome, Edge, Safari) */
+        #employeeList::-webkit-scrollbar {
+            width: 15px; /* Width of the scrollbar */
+        }
+
+        #employeeList::-webkit-scrollbar-thumb {
+            background-color: #003366; /* Blue color for the scrollbar handle */
+            border-radius: 5px; /* Rounded scrollbar handle */
+        }
+
+        #employeeList::-webkit-scrollbar-track {
+            background-color: #f1f1f1; /* Background color of the scrollbar track */
+        }
+
+        /* For Firefox */
+        #employeeList {
+            scrollbar-color: #003366 #f1f1f1; /* Handle color followed by track color */
+        }
+        select.form-control-blue option:hover {
+            background-color: #e6f0ff; /* Light blue on hover */
+            color: #003366; /* Dark blue text */
+        }
+        /* Style the close button */
+        .modal-header .btn-close {
+            background-color: white; /* Makes the background white */
+            color: black; /* Change the icon color to black */
+            opacity: 1; /* Ensure the button is fully opaque */
+        }
+
+        /* Optional: Hover effect */
+        .modal-header .btn-close:hover {
+            background-color: #f8f9fa; /* Light grey background on hover */
+            color: #000; /* Ensure the icon stays black on hover */
+            opacity: 1; /* Ensure full opacity on hover */
+        }
+        .modal-footer{
+            gap: 10px;
+        }
+
+        /* Default background color for editable fields */
+        .editable-field {
+            border-radius: 8px;
+            background-color: #e6f0ff; /* Light blue when not being edited */
+            border: rgba(0, 0, 0, 0.2) solid #003366; /* Light border */
+            transition: background-color 0.3s ease;
+        }
+
+        /* Background color when the field is focused (being edited) */
+        .editable-field:focus {
+            background-color: #003366; /* Change to light yellow when being edited */
+            color: white; /* Dark blue border when focused */
+            outline: none; /* Remove the default outline */
+        }
+
+        /* Style the checkboxes */
+        .custom-checkbox {
+            width: 25px; /* Make the checkbox bigger */
+            height: 25px; /* Make the checkbox bigger */
+            background-color: #e6f0ff; /* Dark blue background */
+            border-radius: 8px; /* Optional: round the corners */
+            border: 3px solid #003366; /* Dark blue border */
+            appearance: none; /* Remove default checkbox style */
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #003366; /* Dark blue when checked */
+            border-color: #003366; /* Dark blue border when checked */
+        }
+
+        .custom-checkbox:checked::after {
+            content: '\2713'; /* Checkmark symbol */
+            position: absolute;
+            top: 0;
+            left: 4px; /* Adjust position of the checkmark */
+            color: white; /* White color for the checkmark */
+            font-size: 15px; /* Make the checkmark larger */
+        }
+
+        #removeemployeesTable input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 18px;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            border: 8px solid #f3f3f3; /* Light grey background color */
+            border-top: 8px solid #003366; /* Blue spinner color */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            width: 25%;
+        }
+
+        .profile-label {
+            display: flex;
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-right: 15px;
+            color: #003366;
+        }
+        .form-select {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            border: 3px solid  #003366;
+            font-weight: 800;
+            outline: none;
+            color:#003366;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+
+        }
+        /* Black overlay */
+        .dropdown-overlay {
+            position: fixed;  /* Covers the entire screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
+            z-index: 10; /* Ensure it appears above everything */
+            display: none; /* Initially hidden */
+        }
+        .dropdown-menu .dropdown-item {
+        color: #003366;
+        font-weight: 500;
+        }
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #003366; /* Dark blue background on hover */
+            color: white; /* White text color on hover */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+            cursor: pointer;
+        }
+        .otherleave{
+            display: none;
+        }
+
+        /* Remove default calendar icon */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);  /* Try to invert the icon to make it white */
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        /* Firefox */
+        input[type="date"]::-moz-calendar-picker-indicator {
+            filter: invert(1);
+            background-color: transparent;
+        }
+
+        /* To remove the native calendar icon completely (not recommended for accessibility) */
+        input[type="date"] {
+            background-image: none;
+        }
+        .modal-body{
+            color: #003366;
+        }
+        #chartContainer {
+            margin-top: 20px;
+            width: 230px;  /* Reduce chart size */
+        }
+        .dropdownfilter {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdownfilter-toggle {
+            background-color: #003366;
+            color: white;
+            padding: 2px 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        .dropdownfilter-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+            z-index: 1;
+            padding: 3px;
+            border-radius: 5px;
+        }
+        .dropdownfilter-content label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+            color: #003366;
+        }
+        .dropdownfilter:hover .dropdownfilter-content {
+            display: block;
+        }
+        #task-title:focus {
+            border: 2px solid #003366 !important;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div> <br>
+        <p style="font-weight: 700;">We Are Commiting Your Changes {{username}}, Please Wait...</p>
+    </div>
+    
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='images/EDS LOGO.png') }}" alt="Logo">
+        <h5>TMO SYSTEM</h5>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#callogModal"><i class="bi bi-file-earmark-plus-fill"></i>   CAL LOG</button>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#actionitemModal"><i class="bi bi-file-earmark-plus-fill"></i>   ACTION ITEM</button>
+        <button id="btn-dashboard" class="btn"><i class="bi bi-pencil-square"></i>    ACTIVITY</button>
+
+    </div>
+
+    <main class="main-content">
+        <header>
+            <div class="employeetag"> <i class="bi bi-person-badge fs-4"></i><span style="margin-left: 10px;">{{username}} </span></div>
+            <div><span class="current-date" id="currdate">DATE: {{ today_date }}</span></div>
+
+            <div class="profile-dropdown">
+                <label for="profile-select" class="profile-label">PROFILE</label>
+
+                <select id="profile-select" class="form-select">
+                    <option value="user" class="dropdown-item" style="font-weight: bold;color:#003366;text-transform: uppercase;" selected>{{username}}</option>
+                    <option id= "adminoptionchoice" value="admin" class="dropdown-item" style="font-weight: bold;color:#003366 ;">TREASURY MIDDLE OFFICE</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="width: max-content;"> <i class="bi bi-door-closed-fill" style="margin-right: 7px;"></i> LOGOUT</button>
+
+        </header>
+
+        <div class="card" id="user-content" style="display: block;">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#my-summary-tab"> <i class="bi bi-person-circle" style="margin-right: 7px;"></i>    MY DASHBOARD</button>
+                </li>
+
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#my-action-items-tab"><i class="bi bi-person-vcard-fill" style="margin-right: 7px;"></i>    MY ACTION ITEMS TRACKER</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#my-CAL-log-tab"><i class="bi bi-person-vcard-fill" style="margin-right: 7px;"></i>    CAL LOG BY ME</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#my-gamification-tab"><i class="bi bi-controller" style="margin-right: 7px;"></i>   GAMIFICATION</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-4">
+                <div class="tab-pane fade show active" id="my-summary-tab">
+
+
+
+                    <!-- Dropdown with Checkboxes -->
+                    <div class="dropdownfilter">
+                        <button class="dropdownfilter-toggle">Select Completion Status </button>
+                        <div class="dropdownfilter-content">
+                            <label><input type="checkbox" class="status-filter custom-checkbox" value="Complete" checked> Complete</label>
+                            <label><input type="checkbox" class="status-filter custom-checkbox" value="Incomplete" checked> Incomplete</label>
+                            <label><input type="checkbox" class="status-filter custom-checkbox" value="Incomplete (Overdue)" checked> Incomplete (Overdue)</label>
+                            <label><input type="checkbox" class="status-filter custom-checkbox" value="Removed" checked> Removed</label>
+                        </div>
+                    </div>
+
+
+                    <!-- Chart Container -->
+                    <div id="chartContainer">
+                        <canvas id="leaveStatusChart"></canvas>
+                    </div>
+
+                </div>
+                <div class="tab-pane fade" id="my-action-items-tab">
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportactionitemsreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export</button>
+
+                    <div class="container mt-5">
+                        <div class="container2" style="overflow-y: auto;">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="tab-pane fade show" id="my-CAL-log-tab">
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportmycalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export CAL Report</button>
+
+                    <div class="container mt-5">
+                        <div class="container2" style="overflow-y: auto;">
+                            {{ table_my_mm_log_html |safe }}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="tab-pane fade" id="my-gamification-ta">
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportactionitemsreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export</button>
+
+                    <div class="container mt-5">
+                        <div class="container2" style="overflow-y: auto;">
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+        <div class="card" id="admin-content" style="display: none;">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard-tab"><i class="bi bi-people-fill" style="margin-right: 7px;"></i>   TMO DASHBOARD</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#employee-profiles-tab"><i class="bi bi-list-columns-reverse" style="margin-right: 7px;"></i>    CAL LOG</button>
+                </li>
+
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#leave-apps-tab"><i class="bi bi-ui-checks" style="margin-right: 7px;"></i>   ACTION ITEMS TRACKER</button>
+                </li>
+
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settings"><i class="bi bi-controller" style="margin-right: 7px;"></i>    GAMIFICATION STATS</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settings"><i class="bi bi-controller" style="margin-right: 7px;"></i>    MISCELLENEOUS LOG</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-4">
+
+
+
+
+
+
+                <div class="tab-pane fade" id="leave-apps-tab">
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportactionitemsreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export Action Items Report</button>
+
+
+                </div>
+                <div class="tab-pane fade" id="employee-profiles-tab">
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportcalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export CAL Log Report</button>
+
+                    <div class="container mt-5">
+                        <div class="container2" style="overflow-y: auto;">
+                            {{ table_mm_log_html |safe }}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="settings">
+                    <h4>Payments</h4>
+                    <p>Manage Payments</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <div class="modal fade" id="exportcalreportModal" tabindex="-1" aria-labelledby="exportcalreportModalLabel" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportcalreportModalLabel"><i class="bi bi-files-alt"></i>    EXPORT CAL LOG REPORT</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <label for="priorityfocus" style="margin-right: 10px;"><b>Select Period of Focus:</b></label>
+                        <select id="priorityfocus" name="priorityfocus" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="alltime">All Time</option>
+                            <option value="customcalenders">Custom</option>
+                        </select>
+                    </div>
+                    <div id="customexportdates" style="display: none;margin-top: 8px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="customexportstartDate"><b>Start Date:</b></label>
+                            <input type="date" id="customexportstartDate" name="customexportstartDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="customexportendDate" ><b>End Date:</b></label>
+                            <input type="date" id="customexportendDate" name="customexportendDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+                    <div class="justify-content-around" id="callogexportformats" style="display: none;">
+                        <button class="btn btn-primary2 mt-3"  data-bs-dismiss="modal" id="formatexcelcallogreportexport"><i class="bi bi-filetype-xlsx"></i>    Excel Workbook</button>
+                        <button class="btn btn-primary2 mt-3"  data-bs-dismiss="modal" id="formatpdfcallogreportexport"><i class="bi bi-filetype-pdf"></i>    PDF</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="leave-days-checker" id="calculator" style="display: none;">
+    <div id="selectedLeave" class="selectedLeave"></div>
+    <div id="result" class="result">Requested Leave Days &#8680; <span id="dayCount"></span></div>
+
+</div>
+
+<div class="modal fade" id="actionitemModal" tabindex="-1" aria-labelledby="actionitemModalLabel" >
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionitemModalLabel"><i class="bi bi-card-list" style="margin-right: 7px;"></i>   NEW ACTION ITEM</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/new_action_item" id="actionitemForm" enctype="multipart/form-data" method="POST">
+                <div class="modal-body">
+
+                    <input type="hidden" name="username" value="{{username}}">
+                    <input type="hidden" name="dateentered" value="{{today_date}}">
+
+
+                    <b>Task Owner:</b> 
+                    <span style="background-color:#e9f1fb;padding:4px 12px; border-radius:15px;font-weight: 800; display: inline-block; margin-bottom: 5px;">{{username}}</span> <br>
+
+                    <div id="task-title-container" class="inputtext">
+                        <label for="task-title"><b>Task Title:</b></label>
+                        <input type="text" name="task-title" id="task-title" style="color:#003366; border: 2px solid #003366; border-radius: 15px;padding: 3px 10px;width: 80%;">
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center;margin-top: 10px;">
+                        <label for="source" style="margin-right: 10px;"><b>Source:</b></label>
+                        <select id="source" name="source" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Source--</option>
+                            <option value="annual">TMO Meeting</option>
+                            <option value="special">Work Plan</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <label for="priority" style="margin-right: 10px;"><b>Priority:</b></label>
+                        <select id="priority" name="priority" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;">
+                            <option value="">--Select Priority--</option>
+                            <option value="annual">High</option>
+                            <option value="special">Medium</option>
+                            <option value="other">Low</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                        <label for="startDate"><b>Start Date:</b></label>
+                        <input type="date" id="startDate" name="startDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                        <label for="endDate" ><b>End Date:</b></label>
+                        <input type="date" id="endDate" name="endDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                    </div>
+
+                    <div id="task-title-container" class="inputtext">
+                        <label for="task-progress"><b>Percentage of Task Complete:</b></label>
+                        <input type="number" name="task-progress" id="task-progress" style="color:#003366; border: 2px solid #003366; border-radius: 15px; padding: 3px 10px; width: 20%;" min="0" max="100">
+                    </div>
+                    <div id="commentsactionitems" class="inputtext">
+                        <label for="commentsactionitem"><b>Comments:</b></label>
+                        <textarea id="commentsactionitem" name="commentsactionitem" style="height: 60px; width: 100%; padding: 5px; border-radius: 8px;"></textarea>
+                    </div>       
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitactionitem" style="width: 40%;">Log Action Item</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="callogModal" tabindex="-1" aria-labelledby="callogModalLabel" >
+    <div class="modal-dialog" style="width: 50%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="callogModalLabel"><i class="bi bi-file-earmark-plus-fill" style="margin-right: 7px;"></i>  NEW CAL LOG</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/CAL_log" id="callogForm" enctype="multipart/form-data" method="POST">
+                <div class="modal-body">
+
+                    <input type="hidden" name="username" value="{{username}}">
+                    <input type="hidden" name="dateentered" value="{{today_date}}">
+
+
+                    <b>CAL Logger:</b> 
+                    <span style="background-color:#e9f1fb;padding:4px 12px; border-radius:15px;font-weight: 800; display: inline-block; margin-bottom: 5px;">{{username}}</span> <br>
+
+                    <div class="form-group" style="display: flex; align-items: center;margin-top: 10px;">
+                        <label for="market" style="margin-right: 10px;"><b>Market:</b></label>
+                        <select id="market" name="market" class="form-control form-control-blue" style="width: 60%;border-radius: 15px;" >
+                            <option value="">--Select Market--</option>
+                            <option value="Money Market">Money Market</option>
+                            <option value="FX Market">Foreign Exchange (FX) Market</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="form-group" style="display: none; align-items: center; margin-top: 10px;" id="mmdealscat">
+                        <label for="calcatmm" style="margin-right: 10px;"><b>MM CAL Category:</b></label>
+                        <select id="calcatmm" name="calcatmm" class="form-control form-control-blue" style="width: 60%; border-radius: 15px;" >
+                            <option value="">--Select Category--</option>
+                            <option value="Early Termination">Early Termination</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Uncaptured Deal">Uncaptured Deal</option>
+                            <option value="Backdated Capture">Backdated Capture</option>
+                            <option value="Unmatured Deal">Unmatured Deal</option>
+                            <option value="Out of Office TFO">Out Of Office TFO Approval</option>
+                            <option value="principal change">Principal Change</option>
+                            <option value="interest rate change">Interest Rate Change</option>
+                            <option value="counterparty limit breaches">Counterparty Limit Breaches</option>
+                            <option value="Flexcube Issues">Flexcube Issues</option>
+
+                        </select>
+                    </div>
+
+                    <div id="principalChangeDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="principalChangeOptions" style="margin-right: 10px;"><b>Principal Change Category:</b></label>
+                        <select id="principalChangeOptions" name="principalChangeOptions" class="form-control form-control-blue" style="width: 50%; border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="Principal Increase">Principal Increase</option>
+                            <option value="Principal Decrease">Principal Decrease</option>
+                        </select>
+                    </div>
+
+                    <div id="uncaptureddealtypeDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="uncaptureddealtypeOptions" style="margin-right: 10px;"><b>MM Deal Type:</b></label>
+                        <select id="uncaptureddealtypeOptions" name="uncaptureddealtypeOptions" class="form-control form-control-blue" style="width: 60%; border-radius: 15px;">
+                            <option value="">--Select Deal Type--</option>
+                            <option value="NNCD">NNCD</option>
+                            <option value="Treasury Bill">Treasury Bill</option>
+                            <option value="Local Placement">Local Placement</option>
+                            <option value="offshoreplacement">Offshore Placement</option>
+                            <option value="Repurchase Agreement">Repo</option>
+                            <option value="treasuryfixedplacement">Treasury Fixed Placement</option>
+                            <option value="promissorynote">Promissory Note</option>
+                            <option value="fixeddeposit">Fixed Deposit</option>
+                            <option value="interbankdeposit">Interbank Deposit</option>
+                            <option value="cashcovertermdeposit">CC Deposit</option>
+
+
+                        </select>
+                    </div>
+
+                    <div id="ccyDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="ccyOptions" style="margin-right: 10px;"><b>Currency:</b></label>
+                        <select id="ccyOptions" name="ccyOptions" class="form-control form-control-blue" style="width: 50%; border-radius: 15px;">
+                            <option value="">--Select Currency--</option>
+                            <option value="ZWG">ZWG</option>
+                            <option value="USD">USD</option>
+                            <option value="ZAR">ZAR</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+
+                    <div id="interestrateChangeDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="interestrateChangeOptions" style="margin-right: 10px;"><b>Interest Change Category:</b></label>
+                        <select id="interestrateChangeOptions" name="interestrateChangeOptions" class="form-control form-control-blue" style="width: 50%; border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="interest rate increase">Interest Rate Increase</option>
+                            <option value="interest rate decrease">Interest Rate Decrease</option>
+                        </select>
+                    </div>
+
+
+                    <div id="mm-deal-reference-container" class="inputtext" style="display: none;margin-top: 10px;">
+                        <label for="mm-deal-reference"><b>MM Deal Reference:</b></label>
+                        <input type="text" name="mm-deal-reference" id="mm-deal-reference" style="color:#003366; border: 2px solid #003366; border-radius: 15px;padding: 3px 10px;width: 45%;margin-left: 8px;">
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="fxdealscat">
+                        <label for="calcatfx" style="margin-right: 10px;"><b>FX CAL Category:</b></label>
+                        <select id="calcatfx" name="calcatfx" class="form-control form-control-blue" style="width: 65%;border-radius: 15px;">
+                            <option value="">--Select Category--</option>
+                            <option value="notcommunicatedtfo">Approval not sought by TFO</option>
+                            <option value="unapprovedtfo">Unapproved in TFO</option>
+                            <option value="delayedtfoapproval">Delayed Approval by TFO</option>
+                            <option value="delayedtmoapproval">Delayed Limit Check by TMO</option>
+                            <option value="dealer limit breaches">Approver Dealer Limit Breaches</option>
+                            <option value="cancelled">Cancelled</option>
+
+                        </select>
+                    </div>
+
+                    <div id="minimumsupposedfxapproverDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="minimumsupposedfxapproverOptions" style="margin-right: 10px;"><b>Minimum Supposed Approver:</b></label>
+                        <select id="minimumsupposedfxapproverOptions" name="minimumsupposedfxapproverOptions" class="form-control form-control-blue" style="width: 38%; border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="Dealer">Dealer</option>
+                            <option value="Senior Dealer">Senior Dealer</option>
+                            <option value="Head Dealing">Head Dealing</option>
+                            <option value="Treasurer">Treasurer</option>
+                            <option value="CEO">CEO</option>
+
+                        </select>
+                    </div>
+
+
+
+
+
+
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="fxdealbank">
+                        <label for="fxdealbankname" style="margin-right: 10px;"><b>Counterparty Bank:</b></label>
+                        <select id="fxdealbankname" name="fxdealbankname" class="form-control form-control-blue" style="width: 40%;border-radius: 15px;" >
+                            <option value="">--Select Bank--</option>
+                            <option value="firstrand">FirstRand</option>
+                            <option value="RBZ">RBZ</option>
+                            <option value="oddo">Oddo</option>
+                            <option value="accessbank">Access Bank</option>
+            
+
+                        </select>
+                    </div>
+
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="mmdealcounterparty">
+                        <label for="counterpartymm" style="margin-right: 10px;"><b>Counterparty:</b></label>
+                        <select id="counterpartymm" name="counterpartymm" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;">
+                            <option value="">--Select Counterparty--</option>
+                            <option value="Oddo">Access Bank</option>           
+                            <option value="AFC">AFC</option>
+                            <option value="CABS">CABS</option>
+                            <option value="Datvest">Datvest</option>
+                            <option value="FBC">FBC</option>
+                            <option value="First Capital">First Capital</option>
+                            <option value="FirstRand">FirstRand</option>         
+                            <option value="Holdings">Holdings</option>   
+                            <option value="Kuvimba">Kuvimba</option>
+                            <option value="NMB">NMB</option>
+                            <option value="Oddo">Oddo</option>           
+                            <option value="POSB">POSB</option>
+                            <option value="RBZ">RBZ</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="fxdealbuycurrency">
+                        <label for="calcatfxbuycurrency" style="margin-right: 10px;"><b>Buy Currency:</b></label>
+                        <select id="calcatfxbuycurrency" name="calcatfxbuycurrency" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Buy Currency--</option>
+                            <option value="ZWG">ZWG</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="BWP">BWP</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="fxdealsellcurrency">
+                        <label for="calcatfxsellcurrency" style="margin-right: 10px;"><b>Sell Currency:</b></label>
+                        <select id="calcatfxsellcurrency" name="calcatfxsellcurrency" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Sell Currency--</option>
+                            <option value="ZWG">ZWG</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="BWP">BWP</option>
+
+                        </select>
+                    </div>
+
+
+                    <div id="fxdealdatecalenders" style="display: none;margin-top: 10px;">
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="fxdealDate" ><b>FX Deal Date:</b></label>
+                            <input type="date" id="fxdealDate" name="fxdealDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+
+                    <div id="fxdealdatecalendersdelay" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="fxdealapprovalDate"><b>FX Deal TFO Approval Date:</b></label>
+                            <input type="date" id="fxdealapprovalDate" name="fxdealapprovalDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="fxdealDate" ><b>Deal Date:</b></label>
+                            <input type="date" id="fxdealDate" name="fxdealDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+                    <div id="outofofficeofficerDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="outofofficeofficerOptions" style="margin-right: 10px;"><b>Supposed Approver:</b></label>
+                        <select id="outofofficeofficerOptions" name="outofofficeofficerOptions" class="form-control form-control-blue" style="width: 38%; border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="CEO">CEO</option>
+                            <option value="Treasurer">Treasurer</option>
+                            <option value="Head Dealing">Head Dealing</option>
+                            <option value="Senior Dealer">Senior Dealer</option>
+
+                        </select>
+                    </div>
+
+                    <div id="approveroutofofficeofficerDropdown" style="display: none; align-items: center; margin-top: 10px;">
+                        <label for="approveroutofofficeofficerOptions" style="margin-right: 10px;"><b>Approver:</b></label>
+                        <select id="approveroutofofficeofficerOptions" name="approveroutofofficeofficerOptions" class="form-control form-control-blue" style="width: 38%; border-radius: 15px;">
+                            <option value="">--Select Option--</option>
+                            <option value="Treasurer">Treasurer</option>
+                            <option value="Head Dealing">Head Dealing</option>
+                            <option value="Senior Dealer">Senior Dealer</option>
+                            <option value="Dealer">Dealer</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="capturedelayOptionsdiv">
+                        <label for="capturedelayOptions" style="margin-right: 10px;"><b>Was the deal termination delayed?</b></label>
+                        <select id="capturedelayOptions" name="capturedelayOptions" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Option--</option>
+                            <option value="noterminationcapturedelay">No</option>
+                            <option value="yesterminationcapturedelay">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="capturedelaycancelOptionsdiv">
+                        <label for="capturedelaycancelOptions" style="margin-right: 10px;"><b>Was the deal cancellation delayed?</b></label>
+                        <select id="capturedelaycancelOptions" name="capturedelaycancelOptions" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Option--</option>
+                            <option value="nocancelcapturedelay">No</option>
+                            <option value="yescancelcapturedelay">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="capturedelaycounterpartylimitbreachOptionsdiv">
+                        <label for="capturedelaycounterpartylimitbreachOptions" style="margin-right: 10px;"><b>Was the deal capture delayed?</b></label>
+                        <select id="capturedelaycounterpartylimitbreachOptions" name="capturedelaycounterpartylimitbreachOptions" class="form-control form-control-blue" style="width: 40%;border-radius: 15px;" >
+                            <option value="">--Select Option--</option>
+                            <option value="nocounterpartylimitbreachcapturedelay">No</option>
+                            <option value="yescounterpartylimitbreachcapturedelay">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="capturedelayoutofofficeOptionsdiv">
+                        <label for="capturedelayoutofofficeOptions" style="margin-right: 10px;"><b>Was the deal capture delayed?</b></label>
+                        <select id="capturedelayoutofofficeOptions" name="capturedelayoutofofficeOptions" class="form-control form-control-blue" style="width: 40%;border-radius: 15px;" >
+                            <option value="">--Select Option--</option>
+                            <option value="nooutofofficecapturedelay">No</option>
+                            <option value="yesoutofofficecapturedelay">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none; align-items: center;margin-top: 10px;" id="capturedelayprincipalchangeOptionsdiv">
+                        <label for="capturedelayprincipalchangeOptions" style="margin-right: 10px;"><b>Was the principal change capture delayed?</b></label>
+                        <select id="capturedelayprincipalchangeOptions" name="capturedelayprincipalchangeOptions" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;" >
+                            <option value="">--Select Option--</option>
+                            <option value="noprincipalchangecapturedelay">No</option>
+                            <option value="yesprincipalchangecapturedelay">Yes</option>
+                        </select>
+                    </div>
+
+                    <div id="principalchangecalenders" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="principalChangeDate"><b>Principal Change Capture/Value Date:</b></label>
+                            <input type="date" id="principalChangeDate" name="principalChangeDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="principalChangesupposedDate" ><b>Principal Change Supposed Capture/ Value Date:</b></label>
+                            <input type="date" id="principalChangesupposedDate" name="principalChangesupposedDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="counterpartylimitbreachcalenders" style="display: none;margin-top: 10px;">
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="counterpartylimitbreachsupposedDate" ><b>Supposed Deal Capture/Value Date:</b></label>
+                            <input type="date" id="counterpartylimitbreachsupposedDate" name="counterpartylimitbreachsupposedDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="changecalenders" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="ChangeDate"><b>Change Date:</b></label>
+                            <input type="date" id="ChangeDate" name="ChangeDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="ChangeValueDate" ><b>Change Value Date:</b></label>
+                            <input type="date" id="ChangeValueDate" name="ChangeValueDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="delayedmaturitycalenders" style="display: none;margin-top: 10px;">
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="supposedmaturityDate" ><b>Supposed Maturity Date:</b></label>
+                            <input type="date" id="supposedmaturityDate" name="supposedmaturityDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="delayedcancellationcalenders" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="delayedcancellationDate"><b>Cancellation Date:</b></label>
+                            <input type="date" id="delayedcancellationDate" name="delayedcancellationDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="supposedcancellationDate" ><b>Supposed Cancellation Date:</b></label>
+                            <input type="date" id="supposedcancellationDate" name="supposedcancellationDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="supposedcapturecalenders" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="supposedcaptureDate"><b>Supposed Capture/Value Date:</b></label>
+                            <input type="date" id="supposedcaptureDate" name="supposedcaptureDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                    </div>
+
+                    <div id="supposedoutofofficecapturecalenders" style="display: none;margin-top: 10px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="supposedoutofofficecaptureDate"><b>Supposed Capture/Value Date:</b></label>
+                            <input type="date" id="supposedoutofofficecaptureDate" name="supposedoutofofficecaptureDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+                    
+                    <div id="backdatedcalenders" style="display: none;margin-top: 10px;">
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="valueDate" ><b>Value Date:</b></label>
+                            <input type="date" id="valueDate" name="valueDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="width: max-content;"> Knock Off</button>
+
+                    </div>
+
+                    <div id="delayedterminationbackdatedcalenders" style="display: none;margin-top: 10px;">
+
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="delayedterminationcaptureDate" ><b>Termination Capture Date:</b></label>
+                            <input type="date" id="delayedterminationcaptureDate" name="delayedterminationcaptureDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                        
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="delayedterminationvalueDate" ><b>Termination Value Date:</b></label>
+                            <input type="date" id="delayedterminationvalueDate" name="delayedterminationvalueDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="delayedapprovalcalenders" style="display: none;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
+                            <label for="approvalDate" ><b>Approval Date:</b></label>
+                            <input type="date" id="approvalDate" name="approvalDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="dealDateapproval"><b>Deal Date:</b></label>
+                            <input type="date" id="dealDateapproval" name="dealDateapproval" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="width: max-content;"> Knock Off</button>
+                       
+
+
+                    </div>
+                    <div class="form-group" style="display: none; align-items: center; margin-top: 10px;" id="dealscountdiv">
+                        <label for="dealcount" style="margin-right: 10px;"><b>Deal Count:</b></label>
+                        <input type="number" id="dealcount" name="dealcount" class="form-control form-control-blue" style="width: 20%; border-radius: 15px;" value="1" min="1">
+                    </div>
+
+                    <div id="commentsCAL" class="inputtext" style="margin-top: 10px;">
+                        <label for="comments"><b>Comments/Notes:</b></label>
+                        <textarea id="comments" name="comments" style="height: 60px; width: 100%; padding: 5px; border-radius: 8px;"></textarea>
+                    </div>       
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitcalitem" style="width: 40%;">Log CAL Item</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="SubmitactionitemModal" tabindex="-1" role="dialog" aria-labelledby="SubmitactionitemModalLabel">
+    <div class="modal-dialog" role="document"  style="max-width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SubmitactionitemModalLabel"><i class="bi bi-file-earmark-plus-fill"></i>    ACTION ITEM LOG CONFIRMATION</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmationSubmitactionitem" style="text-align: center;color: #003366;font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmSubmit">Yes</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="SubmitcallogModal" tabindex="-1" role="dialog" aria-labelledby="SubmitcallogModalLabel">
+    <div class="modal-dialog" role="document"  style="max-width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SubmitcallogModalLabel"><i class="bi bi-file-earmark-plus-fill"></i>   CAL LOG CONFIRMATION</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmationSubmitcallog" style="text-align: center;color: #003366;font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmSubmit">Yes</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Modal for displaying selected employees -->
+<div class="modal fade" id="viewcalidModal" tabindex="-1" role="dialog" aria-labelledby="viewcalidModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewcalidModalLabel"><i class="bi bi-zoom-in" style="margin-right: 7px;"></i>CAL ITEM VIEWER (<span id="cal-id" style="font-weight: 700;"></span>)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="CalItemMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+  <div class="dropdown-overlay"></div>
+
+
+  
+
+  
+  <input type="hidden" id="role"  name="role" value="{{ role }}">
+  <input type="hidden" id="idadmin"  name="idadmin" value="{{ id }}">
+
+
+
+
+
+
+  <!-- Bootstrap and jQuery Scripts -->
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    $(document).ready(function() {
+
+        $("#formatexcelcallogreportexport").click(function() {
+            const priorityFocus = $("#priorityfocus").val();
+
+            if (priorityFocus === "alltime") {
+                window.location.href = "/export_excel_alltime_callog";
+
+            } else {
+                alert("Please select 'All Time' as the period of focus.");
+            }
+        });
+
+        document.getElementById('callogForm').addEventListener('submit', function(event) {
+            // Suppress default form submission
+            event.preventDefault();
+
+            // Get the selected market value
+            const market = document.getElementById('market').value;
+
+            if (market === '') {
+                alert('Please select a Market to proceed.');
+                return; // Stop further execution
+            }
+
+            // Check if the market is "Money Market"
+            else if (market === 'Money Market') {
+                // Get the selected CAL Category for Money Market
+                const calCatMM = document.getElementById('calcatmm').value;
+
+                // If no CAL Category is selected, show an alert and stop further execution
+                if (calCatMM === '') {
+                    alert('Please select a Money Market CAL Category to proceed.');
+                    return; // Stop further execution
+                }
+
+                // If "Early Termination" is selected, check if the deal reference is empty
+                if (calCatMM === 'Early Termination') {
+                    const dealReference = document.getElementById('mm-deal-reference').value;
+                    const capturedelayOptions = document.getElementById('capturedelayOptions').value;
+
+                    
+                    // If the deal reference is empty, show an alert and stop further execution
+                    if (dealReference.trim() === '' && capturedelayOptions.trim() !== '') {
+                        alert('Please provide the Money Market Deal Reference for the deal that was terminated early to proceed.');
+                        return; // Stop further execution
+                    }
+
+                    else if (dealReference.trim() !== '' && capturedelayOptions.trim() === '') {
+                        alert('Please declare whether this early deal termination was delayed or not.');
+                        return; // Stop further execution
+                    }
+                    // Check if capturedelayOptions is empty
+                    else if (capturedelayOptions.trim() === '' && dealReference.trim() === '') {
+                        alert('Please provide the Money Market Deal Reference for the deal that was terminated early and declare whether Deal Termination was delayed or not.');
+                        return; // Stop further execution
+                    }
+
+                    else if (capturedelayOptions.trim() === 'yesterminationcapturedelay' && dealReference.trim() !== '') {
+                        const terminationcapturedate = document.getElementById('delayedterminationcaptureDate').value;
+                        const terminationvaluedate = document.getElementById('delayedterminationvalueDate').value;
+
+                        if (terminationcapturedate.trim() === '' || terminationvaluedate.trim() === '') {
+                            alert('Please provide the required dates.');
+                            return; // Stop further execution
+                        }
+
+                    }
+
+                }
+
+                else if (calCatMM === 'Cancelled') {
+                    const dealReference = document.getElementById('mm-deal-reference').value;
+                    const capturedelaycancelOptions = document.getElementById('capturedelaycancelOptions').value;
+
+                    
+                    // If the deal reference is empty, show an alert and stop further execution
+                    if (dealReference.trim() === '' && capturedelaycancelOptions.trim() !== '') {
+                        alert('Please provide the Money Market Deal Reference for the deal that was Cancelled to proceed.');
+                        return; // Stop further execution
+                    }
+
+                    else if (dealReference.trim() !== '' && capturedelaycancelOptions.trim() === '') {
+                        alert('Please declare whether this deal cancellation was delayed or not.');
+                        return; // Stop further execution
+                    }
+                    // Check if capturedelayOptions is empty
+                    else if (capturedelaycancelOptions.trim() === '' && dealReference.trim() === '') {
+                        alert('Please provide the Money Market Deal Reference for the deal that was cancelled and declare whether Deal Cancellation was delayed or not.');
+                        return; // Stop further execution
+                    }
+
+                    else if (capturedelaycancelOptions.trim() === 'yescancelcapturedelay' && dealReference.trim() !== '') {
+                        const cancellationcapturedate = document.getElementById('delayedcancellationDate').value;
+                        const cancellationvaluedate = document.getElementById('supposedcancellationDate').value;
+
+                        if (cancellationcapturedate.trim() === '' || cancellationvaluedate.trim() === '') {
+                            alert('Please provide the required dates.');
+                            return; // Stop further execution
+                        }
+
+                    }
+
+                }
+
+                else if (calCatMM === 'Out of Office TFO') {
+                    const dealReference = document.getElementById('mm-deal-reference').value;
+                    const capturedelayoutofofficeOptions = document.getElementById('capturedelayoutofofficeOptions').value;
+                    const outofofficeofficerOptions = document.getElementById('outofofficeofficerOptions').value;
+                    const approveroutofofficeofficerOptions = document.getElementById('approveroutofofficeofficerOptions').value;
+
+                    
+                    if (dealReference.trim() === '' && capturedelayoutofofficeOptions.trim() !== '') {
+                        alert('Please provide the Money Market Deal Reference for the Out of Office TFO Approval deal to proceed.');
+                        return; // Stop further execution
+                    }
+
+                    else if (dealReference.trim() !== '' && capturedelayoutofofficeOptions.trim() === '') {
+                        alert('Please declare whether this deal was capture delayed or not.');
+                        return; // Stop further execution
+                    }
+                    // Check if capturedelayOptions is empty
+                    else if (capturedelayoutofofficeOptions.trim() === '' && dealReference.trim() === '') {
+                        alert('Please provide the Money Market Deal Reference for the Out of Office TFO Approval and declare whether Deal capture was delayed or not.');
+                        return; // Stop further execution
+                    }
+
+                    else if (outofofficeofficerOptions.trim() === '' || approveroutofofficeofficerOptions.trim() === '') {
+                        alert('Please provide details required on TFO approver fields.');
+                        return; // Stop further execution
+                    }
+
+                    else if (capturedelayoutofofficeOptions.trim() === 'yesoutofofficecapturedelay' && dealReference.trim() !== '') {
+                        const supposedoutofofficecaptureDate = document.getElementById('supposedoutofofficecaptureDate').value;
+
+                        if (supposedoutofofficecaptureDate.trim() === '') {
+                            alert('Please provide the Supposed deal capture date.');
+                            return; // Stop further execution
+                        }
+
+                    }
+
+                }
+
+
+                else if (calCatMM === 'Backdated Capture') {
+                    const dealReference = document.getElementById('mm-deal-reference').value;
+                    const backdatedcapturevaluedate = document.getElementById('valueDate').value;
+
+                    
+                    if (dealReference.trim() === '' && backdatedcapturevaluedate.trim() !== '') {
+                        alert('Please provide the Money Market Deal Reference for the deal whose capture was delayed to proceed.');
+                        return; // Stop further execution
+                    }
+
+                    else if (dealReference.trim() !== '' && backdatedcapturevaluedate.trim() === '') {
+                        alert('Please provide the Value Date for this Deal whose Capture was delayed.');
+                        return; // Stop further execution
+                    }
+                    // Check if capturedelayOptions is empty
+                    else if (backdatedcapturevaluedate.trim() === '' && dealReference.trim() === '') {
+                        alert('Please provide the Money Market Deal Reference for the deal whose capture was delayed and provide its Value Date as well.');
+                        return; // Stop further execution
+                    }
+
+                }
+
+                else if (calCatMM === 'Unmatured Deal') {
+                    const dealReference = document.getElementById('mm-deal-reference').value;
+                    const supposedmaturityDate = document.getElementById('supposedmaturityDate').value;
+
+                    
+                    if (dealReference.trim() === '' && supposedmaturityDate.trim() !== '') {
+                        alert('Please provide the Money Market Deal Reference for the Unmatured Deal to proceed.');
+                        return; // Stop further execution
+                    }
+
+                    else if (dealReference.trim() !== '' && supposedmaturityDate.trim() === '') {
+                        alert('Please provide the Supposed Maturity Date for this Unmatured Deal to proceed.');
+                        return; // Stop further execution
+                    }
+                    // Check if capturedelayOptions is empty
+                    else if (supposedmaturityDate.trim() === '' && dealReference.trim() === '') {
+                        alert('Please provide the Money Market Deal Reference for the Unmatured Deal and provide its Supposed Maturity Date as well.');
+                        return; // Stop further execution
+                    }
+
+                }
+
+                else if (calCatMM === 'Uncaptured Deal') {
+                    const uncaptureddealtypeOptions = document.getElementById('uncaptureddealtypeOptions').value;
+                    const supposedcaptureDate = document.getElementById('supposedcaptureDate').value;
+
+                    
+                    if (uncaptureddealtypeOptions.trim() === '' && supposedcaptureDate.trim() !== '') {
+                        alert('Please provide the Deal Type of the Uncaptured Deal.');
+                        return; // Stop further execution
+                        event.preventDefault(); // Prevent form submission
+
+                    }
+
+                    else if (uncaptureddealtypeOptions.trim() !== 'NNCD' && uncaptureddealtypeOptions.trim() !== '') {
+                        const  ccyOptions = document.getElementById('ccyOptions').value;
+                        const  counterparty = document.getElementById('counterpartymm').value;
+
+                        if (ccyOptions.trim() === '' && counterparty.trim() !== '') {
+                            alert('Please provide the Currency of the Uncaptured Deal.');
+                            return; // Stop further execution
+                            event.preventDefault(); // Prevent form submission
+
+                        }
+
+                        else if (ccyOptions.trim() !== '' && counterparty.trim() === '') {
+                            alert('Please provide the Counterparty for the Uncaptured Deal.');
+                            return; // Stop further execution
+                            event.preventDefault(); // Prevent form submission
+
+                        }
+
+                        else if (ccyOptions.trim() === '' && counterparty.trim() === '') {
+                            alert('Please provide the Currency and the Counterparty for the Uncaptured Deal.');
+                            return; // Stop further execution
+                            event.preventDefault(); // Prevent form submission
+
+                        }
+
+                    }
+
+                    else if (uncaptureddealtypeOptions.trim() !== '' && supposedcaptureDate.trim() === '') {
+                        alert('Please provide the Supposed Capture Date for this Uncaptured Deal to proceed.');
+                        return; 
+                        event.preventDefault();
+
+                    }
+
+                    else if (uncaptureddealtypeOptions.trim() === '' && supposedcaptureDate.trim() === '') {
+                        alert('Please provide the Money Market Deal Type for the Uncaptured Deal and provide its Supposed Capture Date as well.');
+                        return; 
+                        event.preventDefault(); 
+
+                    }
+
+                }
+            }
+            const formData = new FormData(event.target);
+
+            // Convert FormData to a plain object
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            // Log the form data to the console
+            console.log("Form Data Submitted:", formObject);
+            // If all validations pass, manually submit the form
+            this.submit();
+            $('#loadingOverlay').show();
+
+        });
+
+        const profileSelect = document.getElementById('profile-select');
+        const userContent = document.getElementById('user-content');
+        const adminContent = document.getElementById('admin-content');
+
+        function toggleProfileContent() {
+            const selectedProfile = profileSelect.value;
+            
+            if (selectedProfile === 'user') {
+                // Show user content, hide admin content with smooth transition
+                userContent.style.display = 'block';
+                adminContent.style.display = 'none';
+                setTimeout(() => {
+                    userContent.classList.add('fade-in');
+                    adminContent.classList.remove('fade-out');
+                }, 10);
+            } else if (selectedProfile === 'admin') {
+                // Show admin content, hide user content with smooth transition
+                adminContent.style.display = 'block';
+                userContent.style.display = 'none';
+                setTimeout(() => {
+                    adminContent.classList.add('fade-in');
+                    userContent.classList.remove('fade-out');
+                }, 10);
+            }
+
+            // Save selected profile in localStorage
+            localStorage.setItem('selectedProfile', selectedProfile);
+        }
+
+        // Event listener for profile select change
+        profileSelect.addEventListener('change', toggleProfileContent);
+
+        // On page load, retrieve the stored profile and apply it
+        window.addEventListener('load', function() {
+            const savedProfile = localStorage.getItem('selectedProfile');
+            
+            if (savedProfile) {
+                profileSelect.value = savedProfile;
+                toggleProfileContent();  // Apply the stored profile on page load
+            }
+        });
+
+        $("#market").change(function() {
+            if ($(this).val() === "Money Market") {
+                $("#mmdealscat").css("display", "flex"); // Show mmdealscat with display: flex
+                $("#fxdealscat").hide(); // Hide fxdealscat
+                $("#calcatmm").val(''); // Reset the dropdown to its default state
+                $("#calcatfx").val(''); // Reset the dropdown to its default state
+                $("#fxdealdatecalenders").hide(); // Show Principal Change dropdown
+                $("#fxdealbank").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealbuycurrency").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealsellcurrency").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealdatecalendersdelay").hide(); // Show Principal Change dropdown
+                $("#minimumsupposedfxapproverDropdown").hide(); // Show Principal Change dropdown
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+                
+             
+            } else if ($(this).val() === "FX Market") {
+                $("#fxdealscat").css("display", "flex"); // Show fxdealscat with display: flex
+                $("#mmdealscat").hide(); // Hide mmdealscat
+                $("#principalChangeDropdown").hide(); // Show Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#mm-deal-reference-container").hide(); // Show Money Market Deal Reference container
+                
+                $("#changecalenders").hide(); // Show Calendars
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#calcatfx").val(''); // Reset the dropdown to its default state
+                $("#calcatmm").val(''); // Reset the dropdown to its default state
+
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+                
+
+
+            } else {
+                $("#calcatmm").val(''); // Reset the dropdown to its default state
+                $("#calcatfx").val(''); // Reset the dropdown to its default state
+                $("#fxdealdatecalenders").hide(); // Show Principal Change dropdown
+                $("#fxdealbank").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealbuycurrency").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealsellcurrency").hide(); // Hide Interest Rate Change dropdown
+                $("#fxdealdatecalendersdelay").hide(); // Show Principal Change dropdown
+                $("#minimumsupposedfxapproverDropdown").hide(); // Show Principal Change dropdown
+                $("#mmdealscat").hide(); // Hide mmdealscat
+                $("#fxdealscat").hide(); // Hide fxdealscat
+                $("#principalChangeDropdown").hide(); // Show Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#mm-deal-reference-container").hide(); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Show Calendars
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#calcatfx").val(''); // Reset the dropdown to its default state
+                $("#calcatmm").val(''); // Reset the dropdown to its default stat
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+            }
+        }).trigger("change"); // Trigger the change event on page load to set the initial state
+
+
+        $("#calcatfx").change(function () {
+            const selectedValue = $(this).val();
+
+            // Handle Principal Change
+            if (selectedValue === "unapprovedtfo") {
+                $("#fxdealdatecalenders").show(); // Show Principal Change dropdown
+                $("#fxdealbank").css("display", "flex"); // Hide Interest Rate Change dropdown
+                $("#fxdealbuycurrency").css("display", "flex"); // Hide Interest Rate Change dropdown
+                $("#fxdealsellcurrency").css("display", "flex"); // Hide Interest Rate Change dropdown
+                $("#fxdealdatecalendersdelay").hide(); // Show Principal Change dropdown
+                $("#minimumsupposedfxapproverDropdown").css("display", "flex"); // Show Principal Change dropdown
+    
+            }
+
+            else if (selectedValue === "delayedtfoapproval") {
+                $("#fxdealdatecalenders").hide(); // Show Principal Change dropdown
+                $("#fxdealdatecalendersdelay").show(); // Show Principal Change dropdown
+                $("#fxdealbank").css("display", "flex"); // Hide Interest Rate Change dropdown
+                $("#fxdealbuycurrency").css("display", "flex"); // Hide Interest Rate Change dropdown
+                $("#fxdealsellcurrency").css("display", "flex"); // Hide Interest Rate Change dropdown
+
+            }
+
+            // Handle Other Options
+            else {
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+
+                $("#mm-deal-reference-container").hide(); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Hide Calendars
+            }
+        }).trigger("change"); // Trigger the change event on page load to set the initial state
+
+
+
+
+
+
+
+
+
+        // Handle the main dropdown change event
+        $("#calcatmm").change(function () {
+            const selectedValue = $(this).val();
+
+            // Handle Principal Change
+            if (selectedValue === "principal change") {
+                $("#principalChangeDropdown").css("display", "flex"); // Show Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+
+                
+                $("#changecalenders").hide(); // Show Calendars
+                $("#capturedelayprincipalchangeOptionsdiv").show(); // Show Calendars
+
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+
+            }
+
+            else if (selectedValue === "Unmatured Deal") {
+                $("#principalChangeDropdown").hide(); // Show Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container 
+                $("#delayedmaturitycalenders").show(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+            }
+
+            else if (selectedValue === "counterparty limit breaches") {
+                $("#principalChangeDropdown").hide(); // Show Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").css("display", "flex"); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+                 
+
+            }
+
+            else if (selectedValue === "Out of Office TFO") {
+                $("#principalChangeDropdown").hide(); 
+                $("#interestrateChangeDropdown").hide(); 
+                $("#mm-deal-reference-container").css("display", "flex"); 
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").css("display", "flex"); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").css("display", "flex"); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").css("display", "flex"); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+                
+                
+
+            }     
+
+
+            // Handle Interest Rate Change
+            else if (selectedValue === "interest rate change") {
+                $("#interestrateChangeDropdown").css("display", "flex"); // Show Interest Rate Change dropdown
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#changecalenders").show(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container 
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+            }
+            else if (selectedValue === "Uncaptured Deal") {
+                $("#interestrateChangeDropdown").hide(); // Show Interest Rate Change dropdown
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#mm-deal-reference-container").hide(); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").css("display", "flex"); // Show Money Market Deal Reference container
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container  
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container 
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#uncaptureddealtypeOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").css("display", "flex"); // Show Money Market Deal Reference container
+
+ 
+
+                
+            }
+            else if (selectedValue === "Early Termination") {
+                $("#interestrateChangeDropdown").hide(); // Show Interest Rate Change dropdown
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container  
+                $("#capturedelayOptionsdiv").css("display", "flex"); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container  
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container 
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayOptions").val(''); // Reset the dropdown to its default state
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+
+
+  
+            }
+
+            else if (selectedValue === "Cancelled") {
+                $("#interestrateChangeDropdown").hide(); // Show Interest Rate Change dropdown
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container  
+                $("#capturedelaycancelOptionsdiv").css("display", "flex"); // Show Money Market Deal Reference container  
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").hide(); // Show Money Market Deal Reference container  
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+
+
+               
+            }
+
+            else if (selectedValue === "Backdated Capture") {
+                $("#interestrateChangeDropdown").hide(); // Show Interest Rate Change dropdown
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#changecalenders").hide(); // Show Calendars
+                $("#uncaptureddealtypeDropdown").hide(); // Show Money Market Deal Reference container
+                $("#supposedcapturecalenders").hide(); // Show Money Market Deal Reference container
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container  
+                $("#backdatedcalenders").show(); // Show Money Market Deal Reference container  
+                $("#capturedelayOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container  
+                $("#delayedterminationbackdatedcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#delayedmaturitycalenders").hide(); // Show Money Market Deal Reference container 
+                $("#capturedelaycancelOptionsdiv").hide(); // Show Money Market Deal Reference container  
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#delayedcancellationcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycancelOptions").val(''); // Reset the dropdown to its default state
+                $("#capturedelayprincipalchangeOptionsdiv").hide(); // Show Calendars
+                $("#principalchangecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#counterpartylimitbreachcalenders").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelaycounterpartylimitbreachOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#capturedelayoutofofficeOptionsdiv").hide(); // Hide Money Market Deal Reference container
+                $("#supposedoutofofficecapturecalenders").hide(); // Hide Money Market Deal Reference container
+                $("#outofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#approveroutofofficeofficerDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Show Money Market Deal Reference container
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+   
+            }
+
+
+            // Handle Other Options
+            else {
+                $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
+                $("#interestrateChangeDropdown").hide(); // Hide Interest Rate Change dropdown
+                $("#dealscountdiv").hide(); // Show Money Market Deal Reference container
+
+                $("#mm-deal-reference-container").hide(); // Show Money Market Deal Reference container
+                $("#changecalenders").hide(); // Hide Calendars
+            }
+        }).trigger("change"); // Trigger the change event on page load to set the initial state
+
+
+
+
+        $("#principalChangeOptions").change(function () {
+            if ($(this).val() === "Principal Increase" || $(this).val() === "Principal Decrease") {
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+            } else {
+                $("#mm-deal-reference-container").hide(); // Hide Money Market Deal Reference container
+            }
+        });
+
+        $("#interestrateChangeOptions").change(function () {
+            if ($(this).val() === "interest rate increase" || $(this).val() === "interest rate decrease") {
+                $("#mm-deal-reference-container").css("display", "flex"); // Show Money Market Deal Reference container
+
+            } else {
+                $("#mm-deal-reference-container").hide(); // Hide Money Market Deal Reference container
+            }
+        });
+
+
+        $("#uncaptureddealtypeOptions").change(function () {
+            if ($(this).val() === "NNCD") {
+                $("#ccyDropdown").hide(); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").hide(); // Hide Money Market Deal Reference container
+
+            }
+            else if ($(this).val() === "Treasury Bill") {
+                $("#ccyDropdown").css("display", "flex"); // Hide Money Market Deal Reference container
+                $("#mmdealcounterparty").css("display", "flex"); // Hide Money Market Deal Reference container
+
+            } else  {
+                $("#ccyDropdown").css("display", "flex"); // Show Money Market Deal Reference container
+
+            }
+        });
+
+        $("#capturedelayOptions").change(function () {
+            if ($(this).val() === "yesterminationcapturedelay") {
+                $("#delayedterminationbackdatedcalenders").show(); // Hide Money Market Deal Reference container
+
+            } else {
+                $("#delayedterminationbackdatedcalenders").hide(); // Show Money Market Deal Reference container
+
+            }
+        });
+
+
+        
+        $("#capturedelaycancelOptions").change(function () {
+            if ($(this).val() === "yescancelcapturedelay") {
+                $("#delayedcancellationcalenders").show(); // Hide Money Market Deal Reference container
+
+            } else {
+                $("#delayedcancellationcalenders").hide(); // Show Money Market Deal Reference container
+
+            }
+        });
+
+        $("#capturedelaycounterpartylimitbreachOptions").change(function () {
+            if ($(this).val() === "yescounterpartylimitbreachcapturedelay") {
+                $("#counterpartylimitbreachcalenders").show(); // Hide Money Market Deal Reference container
+
+            } else {
+                $("#counterpartylimitbreachcalenders").hide(); // Show Money Market Deal Reference container
+
+            }
+        });
+
+
+        
+
+
+        $("#capturedelayprincipalchangeOptions").change(function () {
+            if ($(this).val() === "yesprincipalchangecapturedelay") {
+                $("#principalchangecalenders").show(); // Hide Money Market Deal Reference container
+
+            } else {
+                $("#principalchangecalenders").hide(); // Show Money Market Deal Reference container
+
+            }
+        });
+
+        $("#capturedelayoutofofficeOptions").change(function () {
+            if ($(this).val() === "yesoutofofficecapturedelay") {
+                $("#supposedoutofofficecapturecalenders").show(); // Hide Money Market Deal Reference container
+
+            } else {
+                $("#supposedoutofofficecapturecalenders").hide(); // Show Money Market Deal Reference container
+
+            }
+        });
+
+        $("#priorityfocus").change(function () {
+            if ($(this).val() === "customcalenders") {
+                $("#customexportdates").show(); // Hide Money Market Deal Reference container
+                $("#callogexportformats").addClass("d-flex").show();
+    
+                
+            }
+            else if ($(this).val() === "alltime") {
+                $("#customexportdates").hide(); // Hide Money Market Deal Reference container
+                $("#callogexportformats").addClass("d-flex").show();
+    
+                
+            }  else {
+                $("#customexportdates").hide(); // Show Money Market Deal Reference container
+                $("#callogexportformats").removeClass("d-flex").hide();
+            }
+        });
+
+        function hideColumns(columnIndexes) {
+            // Get the table
+            const table = document.getElementById('mmlogtable');
+
+            // Loop through all rows (header and body)
+            for (let i = 0; i < table.rows.length; i++) {
+                // Loop through the specified column indexes
+                for (let j = 0; j < columnIndexes.length; j++) {
+                    const columnIndex = columnIndexes[j];
+                    // Hide the cell at the specified column index
+                    if (table.rows[i].cells[columnIndex]) {
+                        table.rows[i].cells[columnIndex].style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Call the function to hide columns 2 and 4 (indexes 1 and 3)
+        hideColumns([1,6,9,10,11, 13,14,15,16, 17]);
+
+        let currentIdviewcal = null
+
+        $(document).on('click', '.view-cal-btn', function() {
+            // Get the CAL ID from the button's data attribute
+            currentIdviewcal = $(this).data('id'); 
+            $('#cal-id').text('CAL ID: ' + currentIdviewcal);
+
+            // Find the closest table row
+            var row = $(this).closest('tr'); 
+
+            // Get the value of the 6th column (index 5) in the row
+            amendment = row.find('td').eq(5).text(); 
+
+            // Check if amendment is "Out of Office"
+            if (amendment === "Out of Office TFO") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                dealreference =  row.find('td').eq(6).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text(); 
+                TerminationCaptureDate =  row.find('td').eq(10).text(); 
+                valuedate =  row.find('td').eq(10).text(); 
+                daysdelayed =  row.find('td').eq(12).text(); 
+                approver =  row.find('td').eq(13).text(); 
+                supposedapprover =  row.find('td').eq(14).text(); 
+                comments =  row.find('td').eq(17).text(); 
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
+                <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
+                <strong>Supposed Approver: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${supposedapprover}</span></strong> <br><br>
+                <strong>Approver: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${approver}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+            else if (amendment === "Early Termination") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                dealreference =  row.find('td').eq(6).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text();
+                terminationdate =  row.find('td').eq(9).text();  
+                valuedate =  row.find('td').eq(10).text(); 
+                daysdelayed =  row.find('td').eq(12).text(); 
+                comments =  row.find('td').eq(17).text(); 
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Termination Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${terminationdate}</span></strong> <br><br>
+                <strong>Termination Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
+                <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+            else if (amendment === "Uncaptured Deal") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text();
+                counterparty = row.find('td').eq(11).text();
+                comments =  row.find('td').eq(17).text(); 
+                valuedate =  row.find('td').eq(10).text(); 
+
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br>
+                <strong>Market: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${market}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Supposed Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Counterparty: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${counterparty}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+            else {
+                // Default message for other cases
+                var message = `Select New Role for <strong>${amendment} -- ID: ${currentIdviewcal}</strong>`;
+            }
+
+            // Update the modal's message content
+            $('#CalItemMessage').html(message);
+        });
+
+    });
+</script>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#mmlogtable').DataTable({
+            paging: true,        // Enable pagination
+            searching: true,     // Enable search
+            ordering: true,      // Enable sorting
+            info: true,          // Show table information
+            pageLength: 8,       // Force max 5 entries per page
+            lengthChange: false, // Disable entries per page dropdown
+            order: [[0, 'desc']] // Sort first column (index 0) in descending order
+        });
+        
+
+        $('#mymmlogtable').DataTable({
+            paging: true,        // Enable pagination
+            searching: true,     // Enable search
+            ordering: true,      // Enable sorting
+            info: true,          // Show table information
+            pageLength: 8,       // Force max 5 entries per page
+            lengthChange: false, // Disable entries per page dropdown
+            order: [[0, 'desc']] // Sort first column (index 0) in descending order
+        });
+
+        $('#btn-dashboard').click(function() {
+                $('#dashboard-tab').tab('show');
+            });
+
+
+
+
+        document.getElementById('actionitemForm').addEventListener('submit', function (e) {
+        // Prevent the default form submission
+        e.preventDefault();
+
+        // Check if the form is valid
+        if (this.checkValidity()) {
+        // Trigger the modal programmatically
+        const modal = new bootstrap.Modal(document.getElementById('SubmitactionitemModal'));
+        modal.show();
+        } else {
+        // Highlight invalid fields and show validation messages
+        this.reportValidity();
+        }
+
+
+
+
+        $('#confirmSubmit').on('click', function () {
+        // Validate the required fields
+        var isValid = true;
+        var errorMessage = '';
+
+        // Check required fields
+        $('#actionitemForm').find('input[required], select[required], textarea[required]').each(function () {
+            if (!$(this).val()) {
+                isValid = false;
+                errorMessage = 'Please fill in all required fields.';
+                return false; // Exit the loop on the first empty field
+            }
+        });
+
+        // If validation fails, show an alert and stop submission
+        if (!isValid) {
+            alert(errorMessage);
+            return;
+        }
+
+        // Gather all the form data
+        var formData = new FormData($('#actionitemForm')[0]); // Include file inputs if any
+
+        // Show a loading overlay (optional)
+        $('#loadingOverlay').show();
+
+    });
+
+    });
+    });
+
+
+
+
+</script>
+
+
+</body>
+</html>

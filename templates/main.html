@@ -1331,7 +1331,7 @@
     <div class="modal-dialog" role="document"  style="max-width: 40%;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalcalLabel"><i class="bi bi-file-earmark-plus-fill"></i>   DELETE CAL LOG CONFIRMATION</h5>
+                <h5 class="modal-title" id="deleteModalcalLabel"><i class="bi bi-trash3-fill" style="margin-right: 7px;"></i>   DELETE CAL LOG CONFIRMATION</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1345,7 +1345,23 @@
     </div>
 </div>
 
-
+<div class="modal fade" id="editModalcal" tabindex="-1" role="dialog" aria-labelledby="editModalcalLabel">
+    <div class="modal-dialog" role="document"  style="max-width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalcalLabel"><i class="bi bi-file-earmark-plus-fill"></i>   CAL LOG EDITOR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editcal" style="text-align: center;color: #003366;font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="editcalsavechanges">Save Changes</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal for displaying selected employees -->
 <div class="modal fade" id="viewcalidModal" tabindex="-1" role="dialog" aria-labelledby="viewcalidModalLabel" aria-hidden="true">
@@ -2261,6 +2277,46 @@
         // Hide columns in both tables
         hideColumns('mmlogtable', [1, 6, 9, 10, 11, 13, 14, 15, 16, 17]);
         hideColumns('mymmlogtable', [1, 6, 9, 10, 11, 13, 14, 15, 16, 17]);
+
+        let currentIddeletecal = null
+
+        $(document).on('click', '.delete-cal-btn', function() {
+            // Get the CAL ID from the button's data attribute
+            currentIdviewcal = $(this).data('id'); 
+            $('#cal-id').text('CAL ID: ' + currentIddeletecal);
+
+            // Find the closest table row
+            var row = $(this).closest('tr'); 
+
+            // Get the value of the 6th column (index 5) in the row
+
+            // Check if amendment is "Out of Office"
+            loggedon =  row.find('td').eq(3).text(); 
+            market =  row.find('td').eq(4).text(); 
+            amendment =  row.find('td').eq(5).text(); 
+            dealtype =  row.find('td').eq(7).text(); 
+
+            var message = ` <strong>Proceed to delete <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype} ${market} ${amendment}</span></strong> CAL <br><br>
+            Logged On <strong style="margin-left:20px;"><span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+            With ID<strong> <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${currentIddeletecal}</span></strong>? <br><br>`;
+
+            $('#confirmationdeletecal').html(message);
+        });
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         let currentIdviewcal = null
 

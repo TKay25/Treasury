@@ -1620,7 +1620,7 @@
 
                 }
 
-                else if (calCatMM === 'Cancelled') {
+                else if (calCatMM === 'Cancelled Deal') {
                     const dealReference = document.getElementById('mm-deal-reference').value;
                     const capturedelaycancelOptions = document.getElementById('capturedelaycancelOptions').value;
 
@@ -1741,7 +1741,7 @@
                 else if (calCatMM === 'Uncaptured Deal') {
                     const loader = document.getElementById('edsLoader');
                     loader.style.display = 'flex'; // Or whatever display makes it visible
-                    
+
                     const uncaptureddealtypeOptions = document.getElementById('uncaptureddealtypeOptions').value;
                     const supposedcaptureDate = document.getElementById('supposedcaptureDate').value;
 
@@ -2205,7 +2205,7 @@
   
             }
 
-            else if (selectedValue === "Cancelled") {
+            else if (selectedValue === "Cancelled Deal") {
                 $("#interestrateChangeDropdown").hide(); // Show Interest Rate Change dropdown
                 $("#principalChangeDropdown").hide(); // Hide Principal Change dropdown
                 $("#changecalenders").hide(); // Show Calendars

@@ -566,6 +566,90 @@
             border: 2px solid #003366 !important;
             outline: none;
         }
+
+
+
+        .eds-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-family: 'Century Gothic', sans-serif;  
+        }
+        
+        .eds-logo {
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #003366;
+        }
+        
+        .eds-tagline {
+            color: #fff;
+            font-size: 0.6rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        .loader-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loader-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, White, #003366);
+            animation: load 3s ease-in-out infinite;
+            border-radius: 2px;
+        }
+        
+        @keyframes load {
+            0% { width: 0%; left: 0; }
+            50% { width: 100%; left: 0; }
+            100% { width: 0%; left: 100%; }
+        }
+        
+        .eds-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 20px);
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .grid-item {
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 255, 252, 0.2);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .grid-item:nth-child(1) { animation-delay: 0s; }
+        .grid-item:nth-child(2) { animation-delay: 0.2s; }
+        .grid-item:nth-child(3) { animation-delay: 0.4s; }
+        .grid-item:nth-child(4) { animation-delay: 0.6s; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.2); opacity: 1; background: #336699; }
+        }
+
     </style>
 </head>
 
@@ -573,6 +657,23 @@
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div> <br>
         <p style="font-weight: 700;">We Are Commiting Your Changes {{username}}, Please Wait...</p>
+    </div>
+
+    <div class="eds-loader" id="edsLoader" style="display: none;">
+        <div class="eds-logo"><img src="{{ url_for('static', filename='images/EDS LOGO.png') }}"  alt="Logo" class="logo" style="width: 170px;"></div>
+        <br><br>
+        <p style="font-weight: 700;color: white;font-size: 1.2rem;">We Are Commiting Your Changes {{username}}, Please Wait...</p>
+
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+        
+        <div class="eds-grid">
+            <div class="grid-item"></div>
+            <div class="grid-item"></div>
+            <div class="grid-item"></div>
+            <div class="grid-item"></div>
+        </div>
     </div>
     
     <div class="sidebar">
@@ -1434,6 +1535,7 @@
             
             if (priorityFocus === "alltime") {
                 window.location.href = `/export_excel_alltime_callog?priorityFocus=${encodeURIComponent(priorityFocus)}`;
+                
             } 
             else if (priorityFocus === "customcalenders") {
                 const startDate = $("#customexportstartDate").val();
@@ -1482,6 +1584,9 @@
 
                 // If "Early Termination" is selected, check if the deal reference is empty
                 if (calCatMM === 'Early Termination') {
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
+
                     const dealReference = document.getElementById('mm-deal-reference').value;
                     const capturedelayOptions = document.getElementById('capturedelayOptions').value;
 
@@ -1634,6 +1739,9 @@
                 }
 
                 else if (calCatMM === 'Uncaptured Deal') {
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
+                    
                     const uncaptureddealtypeOptions = document.getElementById('uncaptureddealtypeOptions').value;
                     const supposedcaptureDate = document.getElementById('supposedcaptureDate').value;
 
@@ -1700,7 +1808,6 @@
             console.log("Form Data Submitted:", formObject);
             // If all validations pass, manually submit the form
             this.submit();
-            $('#loadingOverlay').show();
 
         });
 
@@ -2331,7 +2438,7 @@
         // Handle the "Yes" button click
         $('#confirmdeletecal').on('click', function() {
             if (currentIddeletecal) {
-                $('#loadingOverlay').show();
+                $('#edsLoader').show();
                 // Send AJAX request to Flask backend
                 $.ajax({
                     url: '/delete_cal',  // Your Flask endpoint
@@ -2622,7 +2729,7 @@
         var formData = new FormData($('#actionitemForm')[0]); // Include file inputs if any
 
         // Show a loading overlay (optional)
-        $('#loadingOverlay').show();
+        $('#edsLoader').show();
 
     });
 

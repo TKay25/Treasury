@@ -801,6 +801,41 @@ try:
                 return redirect(url_for('landingpage'))
 
 
+        @app.route('/delete_cal', methods=['POST'])
+        def delete_cal():
+            try:
+                global table_name_mm
+                global table_name_mm_deleted
+
+                conn = get_db_connection()
+                cursor = conn.cursor()
+
+                data = request.get_json()
+                cal_id = data.get('cal_id') 
+
+                insert_query = f"""
+                INSERT INTO %s SELECT * FROM %s WHERE id = %s;
+                """
+                cursor.execute(insert_query, (table_name_mm_deleted, table_name_mm, cal_id))
+                
+
+                delete_query = f"""
+                DELETE FROM %s WHERE id = %s;
+                """
+                cursor.execute(delete_query, (table_name_mm, cal_id))
+
+
+                # result = db.execute("DELETE FROM cal_logs WHERE id = ?", (cal_id,))
+                
+                # Return success response
+
+
+                return jsonify({'success': True, 'message': 'CAL deleted successfully'})
+            except Exception as e:
+                return jsonify({'success': False, 'message': str(e)}), 500
+    
+
+
 
         @app.route('/dashboard')
         def dashboard():

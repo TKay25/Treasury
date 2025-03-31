@@ -1331,7 +1331,7 @@
     <div class="modal-dialog" role="document"  style="max-width: 40%;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalcalLabel"><i class="bi bi-trash3-fill" style="margin-right: 7px;"></i>   DELETE CAL LOG CONFIRMATION</h5>
+                <h5 class="modal-title" id="deleteModalcalLabel"><i class="bi bi-trash3-fill" style="margin-right: 7px;"></i>   DELETE CAL LOG CONFIRMATION <span id="cal-id"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2296,11 +2296,36 @@
             amendment =  row.find('td').eq(5).text(); 
             dealtype =  row.find('td').eq(7).text(); 
 
-            var message = ` <strong>Proceed to delete <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype} ${market} ${amendment}</span></strong> CAL <br><br>
-            Logged On <strong style="margin-left:20px;"><span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
-            With ID<strong> <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${currentIddeletecal}</span></strong>? <br><br>`;
+            var message = `<strong>Proceed to delete <br><br> <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${market} ${dealtype} ${amendment}</span> CAL</strong> <br><br>
+            <strong> Logged On <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span> with ID <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${currentIddeletecal}</span> ?</strong>`;
 
             $('#confirmationdeletecal').html(message);
+        });
+
+        // Handle the "Yes" button click
+        $('#confirmdeletecal').on('click', function() {
+            if (currentIddeletecal) {
+                // Send AJAX request to Flask backend
+                $.ajax({
+                    url: '/delete_cal',  // Your Flask endpoint
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ cal_id: currentIddeletecal }),
+                    success: function(response) {
+                        // Handle success (e.g., show success message, remove row from table)
+                        if (response.success) {
+                            alert('CAL deleted successfully!');
+                            // Optionally remove the row from the table
+                            $('.delete-cal-btn[data-id="' + currentIddeletecal + '"]').closest('tr').remove();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error deleting CAL: ' + error);
+                    }
+                });
+            }
         });
 
 

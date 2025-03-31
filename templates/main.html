@@ -2223,9 +2223,11 @@
             }
         });
 
-        function hideColumns(columnIndexes) {
+        function hideColumns(tableId, columnIndexes) {
             // Get the table
-            const table = document.getElementById('mmlogtable');
+            const table = document.getElementById(tableId);
+
+            if (!table) return; // Skip if table doesn't exist
 
             // Loop through all rows (header and body)
             for (let i = 0; i < table.rows.length; i++) {
@@ -2240,25 +2242,9 @@
             }
         }
 
-        function hideColumns(columnIndexes) {
-            // Get the table
-            const table = document.getElementById('mymmlogtable');
-
-            // Loop through all rows (header and body)
-            for (let i = 0; i < table.rows.length; i++) {
-                // Loop through the specified column indexes
-                for (let j = 0; j < columnIndexes.length; j++) {
-                    const columnIndex = columnIndexes[j];
-                    // Hide the cell at the specified column index
-                    if (table.rows[i].cells[columnIndex]) {
-                        table.rows[i].cells[columnIndex].style.display = 'none';
-                    }
-                }
-            }
-        }
-
-        // Call the function to hide columns 2 and 4 (indexes 1 and 3)
-        hideColumns([1,6,9,10,11, 13,14,15,16, 17]);
+        // Hide columns in both tables
+        hideColumns('mmlogtable', [1, 6, 9, 10, 11, 13, 14, 15, 16, 17]);
+        hideColumns('hhg', [1, 6, 9, 10, 11, 13, 14, 15, 16, 17]);
 
         let currentIdviewcal = null
 

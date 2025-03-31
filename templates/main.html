@@ -716,6 +716,7 @@
                 </div>
                 <div class="tab-pane fade" id="employee-profiles-tab">
                     <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportcalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export CAL Log Report</button>
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportcalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export Deleted CAL Logs Report</button>
 
                     <div class="container mt-5">
                         <div class="container2" style="overflow-y: auto;">
@@ -894,7 +895,7 @@
                         <select id="calcatmm" name="calcatmm" class="form-control form-control-blue" style="width: 60%; border-radius: 15px;" >
                             <option value="">--Select Category--</option>
                             <option value="Early Termination">Early Termination</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="Cancelled Deal">Cancelled Deal</option>
                             <option value="Uncaptured Deal">Uncaptured Deal</option>
                             <option value="Backdated Capture">Backdated Capture</option>
                             <option value="Unmatured Deal">Unmatured Deal</option>
@@ -1368,7 +1369,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewcalidModalLabel"><i class="bi bi-zoom-in" style="margin-right: 7px;"></i>CAL ITEM VIEWER (<span id="cal-id" style="font-weight: 700;"></span>)</h5>
+                <h5 class="modal-title" id="viewcalidModalLabel"><i class="bi bi-zoom-in" style="margin-right: 7px;"></i>CAL ITEM VIEWER (<span id="cal-id-view" style="font-weight: 700;"></span>)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2305,6 +2306,7 @@
         // Handle the "Yes" button click
         $('#confirmdeletecal').on('click', function() {
             if (currentIddeletecal) {
+                $('#loadingOverlay').show();
                 // Send AJAX request to Flask backend
                 $.ajax({
                     url: '/delete_cal',  // Your Flask endpoint
@@ -2312,15 +2314,22 @@
                     contentType: 'application/json',
                     data: JSON.stringify({ cal_id: currentIddeletecal }),
                     success: function(response) {
+
                         // Handle success (e.g., show success message, remove row from table)
                         if (response.success) {
                             alert('CAL deleted successfully!');
-                            // Optionally remove the row from the table
-                            $('.delete-cal-btn[data-id="' + currentIddeletecal + '"]').closest('tr').remove();
+
+                            setTimeout(function() {
+                                location.reload();  
+                            }, 100);  // 100ms delay to ensure UI update before alert
+                   
                         } else {
-                            alert('Error: ' + response.message);
-                        }
-                    },
+                                alert('Error: ' + response.message);
+                                setTimeout(function() {
+                                    location.reload();  
+                                }, 100);  // 100ms delay to ensure UI update before alert
+                            }
+                        },
                     error: function(xhr, status, error) {
                         alert('Error deleting CAL: ' + error);
                     }
@@ -2334,7 +2343,7 @@
         $(document).on('click', '.view-cal-btn', function() {
             // Get the CAL ID from the button's data attribute
             currentIdviewcal = $(this).data('id'); 
-            $('#cal-id').text('CAL ID: ' + currentIdviewcal);
+            $('#cal-id-view').text('CAL ID: ' + currentIdviewcal);
 
             // Find the closest table row
             var row = $(this).closest('tr'); 
@@ -2398,6 +2407,84 @@
 
                 ;
             }
+
+            else if (amendment === "Cancelled Deal") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                dealreference =  row.find('td').eq(6).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text();
+                cancellationdate =  row.find('td').eq(9).text();  
+                valuedate =  row.find('td').eq(10).text(); 
+                daysdelayed =  row.find('td').eq(12).text(); 
+                comments =  row.find('td').eq(17).text(); 
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Termination Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${cancellationdate}</span></strong> <br><br>
+                <strong>Termination Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
+                <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+
+            else if (amendment === "Unmatured Deal") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                dealreference =  row.find('td').eq(6).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text();
+                comments =  row.find('td').eq(17).text(); 
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+                <strong style="margin-left:20px;">Market: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${market}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+
+            else if (amendment === "Backdated Capture") {
+                logger =  row.find('td').eq(2).text(); 
+                loggedon =  row.find('td').eq(3).text(); 
+                market =  row.find('td').eq(4).text(); 
+                amendment =  row.find('td').eq(5).text(); 
+                valuedate =  row.find('td').eq(10).text(); 
+                daysdelayed =  row.find('td').eq(12).text(); 
+                dealreference =  row.find('td').eq(6).text(); 
+                dealtype =  row.find('td').eq(7).text(); 
+                dealcurrency =  row.find('td').eq(8).text();
+                comments =  row.find('td').eq(17).text(); 
+
+
+                var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
+                <strong style="margin-left:20px;">Logged On: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${loggedon}</span></strong> <br><br> 
+                <strong style="margin-left:20px;">Market: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${market}</span></strong> <br><br> 
+                <strong>Amendment: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${amendment}</span></strong> <br><br>
+                <strong>Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
+                <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
+                <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
+                <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
+                <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+
+                ;
+            }
+
+
             else if (amendment === "Uncaptured Deal") {
                 logger =  row.find('td').eq(2).text(); 
                 loggedon =  row.find('td').eq(3).text(); 
@@ -2424,7 +2511,7 @@
             }
             else {
                 // Default message for other cases
-                var message = `Select New Role for <strong>${amendment} -- ID: ${currentIdviewcal}</strong>`;
+                var message = `<strong> Kindly export CAL Report to see all details</strong>`;
             }
 
             // Update the modal's message content
@@ -2444,7 +2531,7 @@
             searching: true,     // Enable search
             ordering: true,      // Enable sorting
             info: true,          // Show table information
-            pageLength: 8,       // Force max 5 entries per page
+            pageLength: 9,       // Force max 5 entries per page
             lengthChange: false, // Disable entries per page dropdown
             order: [[0, 'desc']] // Sort first column (index 0) in descending order
         });
@@ -2455,7 +2542,7 @@
             searching: true,     // Enable search
             ordering: true,      // Enable sorting
             info: true,          // Show table information
-            pageLength: 8,       // Force max 5 entries per page
+            pageLength: 9,       // Force max 5 entries per page
             lengthChange: false, // Disable entries per page dropdown
             order: [[0, 'desc']] // Sort first column (index 0) in descending order
         });

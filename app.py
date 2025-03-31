@@ -812,27 +812,39 @@ try:
 
                 data = request.get_json()
                 cal_id = data.get('cal_id') 
+                print(cal_id)
 
+                # First insert into deleted table with specific columns
                 insert_query = f"""
-                INSERT INTO %s SELECT * FROM %s WHERE id = %s;
+                INSERT INTO {table_name_mm_deleted} 
+                (CALid, CALLoggerid, CALLogger, MarketCategory, DealReference, DealType, 
+                Counterparty, Currency, EffectedDate, ValueDate, DaysDelay, 
+                KnockoffCALid, SupposedApprover, Approver)
+                SELECT 
+                CALid, CALLoggerid, CALLogger, MarketCategory, DealReference, DealType, 
+                Counterparty, Currency, EffectedDate, ValueDate, DaysDelay, 
+                KnockoffCALid, SupposedApprover, Approver
+                FROM {table_name_mm} 
+                WHERE CALid = %s;
                 """
-                cursor.execute(insert_query, (table_name_mm_deleted, table_name_mm, cal_id))
+                cursor.execute(insert_query, (cal_id,))
                 
-
+                # Then delete from main table
                 delete_query = f"""
-                DELETE FROM %s WHERE id = %s;
+                DELETE FROM {table_name_mm} WHERE CALid = %s;
                 """
-                cursor.execute(delete_query, (table_name_mm, cal_id))
+                cursor.execute(delete_query, (cal_id,))
 
-
-                # result = db.execute("DELETE FROM cal_logs WHERE id = ?", (cal_id,))
+                conn.commit()  # Don't forget to commit the transaction!
                 
-                # Return success response
-
-
                 return jsonify({'success': True, 'message': 'CAL deleted successfully'})
             except Exception as e:
+                if conn:
+                    conn.rollback()  # Rollback on error
                 return jsonify({'success': False, 'message': str(e)}), 500
+            finally:
+                if conn:
+                    conn.close()  # Always close the connection
     
 
 

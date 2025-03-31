@@ -1623,6 +1623,8 @@
                 else if (calCatMM === 'Cancelled Deal') {
                     const dealReference = document.getElementById('mm-deal-reference').value;
                     const capturedelaycancelOptions = document.getElementById('capturedelaycancelOptions').value;
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
 
                     
                     // If the deal reference is empty, show an alert and stop further execution
@@ -1659,6 +1661,8 @@
                     const capturedelayoutofofficeOptions = document.getElementById('capturedelayoutofofficeOptions').value;
                     const outofofficeofficerOptions = document.getElementById('outofofficeofficerOptions').value;
                     const approveroutofofficeofficerOptions = document.getElementById('approveroutofofficeofficerOptions').value;
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
 
                     
                     if (dealReference.trim() === '' && capturedelayoutofofficeOptions.trim() !== '') {
@@ -1697,6 +1701,8 @@
                 else if (calCatMM === 'Backdated Capture') {
                     const dealReference = document.getElementById('mm-deal-reference').value;
                     const backdatedcapturevaluedate = document.getElementById('valueDate').value;
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
 
                     
                     if (dealReference.trim() === '' && backdatedcapturevaluedate.trim() !== '') {
@@ -1719,6 +1725,8 @@
                 else if (calCatMM === 'Unmatured Deal') {
                     const dealReference = document.getElementById('mm-deal-reference').value;
                     const supposedmaturityDate = document.getElementById('supposedmaturityDate').value;
+                    const loader = document.getElementById('edsLoader');
+                    loader.style.display = 'flex'; // Or whatever display makes it visible
 
                     
                     if (dealReference.trim() === '' && supposedmaturityDate.trim() !== '') {

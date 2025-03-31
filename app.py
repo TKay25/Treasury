@@ -331,7 +331,7 @@ try:
 
 
 
-            elif calcatmm == 'Cancelled':
+            elif calcatmm == 'Cancelled Deal':
                 deal_type_mapping = {
                     'nncd': "NNCD",
                     'inbr': "Treasury Bill",
@@ -451,7 +451,7 @@ try:
 
 
 
-            elif calcatmm == 'Cancelled':
+            elif calcatmm == 'Cancelled Deal':
                 deal_type_mapping = {
                     'nncd': "NNCD",
                     'inbr': "Treasury Bill",

@@ -103,12 +103,11 @@ try:
 
         def add_column():
             conn = get_db_connection()
-            add_column_query = f"""ALTER TABLE {table_name_mm} ADD COLUMN comments VARCHAR(200);"""
+            add_column_query = f"""ALTER TABLE {table_name_mm_deleted} ADD COLUMN comments VARCHAR(200);"""
             cursor = conn.cursor()
             cursor.execute(add_column_query)
             conn.commit()
             print("Column added successfully!")
-
         #add_column()
 
         def create_user(username, password):
@@ -748,12 +747,11 @@ try:
 
                 except Exception as e:
                     print("Error inserting user:", e)
-                    return redirect(url_for('landingpage'))  # Ensure a response is returned
+                    return redirect(url_for('landingpage'))  # Ensure a response is returned\
                 
 
-
-        @app.route('/export_excel_alltime_callog')
-        def export_excel():
+        @app.route('/export_excel_alltime_deleted_callog')
+        def export_deleted_excel():
             user_uuid = session.get('user_uuid')
             if user_uuid:
 
@@ -763,6 +761,58 @@ try:
 
                     global table_name_mm
                     global today_date
+                    global table_name_mm_deleted
+
+                    query = f"SELECT * FROM {table_name_mm_deleted};"
+                    cursor.execute(query)
+                    rows = cursor.fetchall()
+                    print(rows)
+
+                    allmmcallog = pd.DataFrame(rows, columns=["CAL ID","CAL LOGGER ID","LOGGER","AMENDMENT","DEAL REFERENCE","DEAL TYPE","COUNTERPARTY","CURRENCY","EFFECTED DATE","VALUE DATE","DAYS DELAYED","KNOCKOFF ID","SUPPOSED APPROVER","APPROVER","MARKET","DATE LOGGED","COUNT","COMMENTS/NOTES"])
+                    allmmcallog = allmmcallog[["CAL ID","CAL LOGGER ID","DATE LOGGED","LOGGER","MARKET","AMENDMENT","DEAL REFERENCE","DEAL TYPE","COUNTERPARTY","CURRENCY","EFFECTED DATE","VALUE DATE","DAYS DELAYED","KNOCKOFF ID","SUPPOSED APPROVER","APPROVER","COUNT","COMMENTS/NOTES"]]
+                    
+                    print(allmmcallog)
+
+                    allmmcallog = allmmcallog.sort_values(by="CAL ID", ascending=False)
+
+                    print(allmmcallog)
+
+                    # Create an in-memory Excel file
+                    output = BytesIO()
+                    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                        allmmcallog.to_excel(writer, index=False, sheet_name=f'DELETED CAL {today_date}')
+
+                    output.seek(0)
+                    print('done')
+
+                    # Send the file to the client
+                    return send_file(
+                        output,
+                        as_attachment=True,
+                        download_name=f'Deleted CAL Log Report as at {today_date}.xlsx',
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    )
+                
+                except Exception as e:
+                    print("Error:", e)
+                    return redirect(url_for('dashboard'))  # Ensure a response is returned
+
+            else:
+                return redirect(url_for('landingpage'))
+     
+
+
+        @app.route('/export_excel_alltime_callog')
+        def export_excel():
+            user_uuid = session.get('user_uuid')
+            if user_uuid:
+                global table_name_mm
+                global today_date
+                focus = request.args.get('priorityFocus')
+
+                try:
+                    conn = get_db_connection()
+                    cursor = conn.cursor()
 
                     query = f"SELECT * FROM {table_name_mm};"
                     cursor.execute(query)
@@ -777,25 +827,63 @@ try:
 
                     print(allmmcallog)
 
-                    # Create an in-memory Excel file
-                    output = BytesIO()
-                    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                        allmmcallog.to_excel(writer, index=False, sheet_name=f'All CAL {today_date}')
+                    if focus == "alltime":
 
-                    output.seek(0)
-                    print('done')
+                        # Create an in-memory Excel file
+                        output = BytesIO()
+                        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                            allmmcallog.to_excel(writer, index=False, sheet_name=f'CAL REPORT {today_date}')
 
-                    # Send the file to the client
-                    return send_file(
-                        output,
-                        as_attachment=True,
-                        download_name=f'CAL Log Report as at {today_date}.xlsx',
-                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    )
-                
+                        output.seek(0)
+                        print('done')
+
+                        # Send the file to the client
+                        return send_file(
+                            output,
+                            as_attachment=True,
+                            download_name=f'CAL Log Report as at {today_date}.xlsx',
+                            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        )
+                    
+                    elif focus == "customcalenders":
+
+                        start_date = request.args.get('startDate')
+                        end_date = request.args.get('endDate')
+
+                        filtered_df = allmmcallog[
+                            (allmmcallog['AMENDMENT'] == 'Unmatured Deal') & 
+                            (pd.to_datetime(allmmcallog['VALUE DATE']) >= start_date) & 
+                            (pd.to_datetime(allmmcallog['VALUE DATE']) <= end_date)
+                        ]
+                        
+                        output = BytesIO()
+                        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                            filtered_df.to_excel(writer, index=False, sheet_name=f'CAL REPORT {end_date}')
+
+                        output.seek(0)
+                        print('done')
+
+                        # Send the file to the client
+                        return send_file(
+                            output,
+                            as_attachment=True,
+                            download_name=f'CAL Log Report for period {start_date} to {end_date}.xlsx',
+                            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        )
+                    
+                    else:
+                        return jsonify({'success': False, 'message': 'Invalid focus parameter'}), 400
+
                 except Exception as e:
                     print("Error:", e)
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
+                    
+
+
+
+
+
+
 
             else:
                 return redirect(url_for('landingpage'))

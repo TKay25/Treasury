@@ -714,9 +714,10 @@
 
 
                 </div>
+
                 <div class="tab-pane fade" id="employee-profiles-tab">
                     <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportcalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export CAL Log Report</button>
-                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportcalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export Deleted CAL Logs Report</button>
+                    <button class="btn btn-primary mt-3" style="width: max-content;" id="exportdeletedcals"><i class="bi bi-files-alt" style="margin-right: 7px;"></i>   Export Deleted CAL Logs Report</button>
 
                     <div class="container mt-5">
                         <div class="container2" style="overflow-y: auto;">
@@ -1421,14 +1422,36 @@
 <script>
     $(document).ready(function() {
 
+        $("#exportdeletedcals").click(function() {
+            window.location.href = "/export_excel_alltime_deleted_callog";
+        });
+
+
         $("#formatexcelcallogreportexport").click(function() {
             const priorityFocus = $("#priorityfocus").val();
-
+            
             if (priorityFocus === "alltime") {
-                window.location.href = "/export_excel_alltime_callog";
-
-            } else {
-                alert("Please select 'All Time' as the period of focus.");
+                window.location.href = `/export_excel_alltime_callog?priorityFocus=${encodeURIComponent(priorityFocus)}`;
+            } 
+            else if (priorityFocus === "customcalenders") {
+                const startDate = $("#customexportstartDate").val();
+                const endDate = $("#customexportendDate").val();
+                
+                if (!startDate || !endDate) {
+                    alert("Please select both start and end dates.");
+                    return;
+                }
+                
+                // Additional client-side validation
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert("Start date cannot be after end date.");
+                    return;
+                }
+                
+                window.location.href = `/export_excel_alltime_callog?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&priorityFocus=${encodeURIComponent(priorityFocus)}`;
+            }
+            else {
+                alert("Please select either 'All Time' or specify custom dates.");
             }
         });
 

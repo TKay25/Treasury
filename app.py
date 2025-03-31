@@ -200,6 +200,9 @@ try:
             dealcount = request.form.get('dealcount')
             uncapturedsupposedcapture = request.form.get('supposedcaptureDate')
 
+            print(cancellation_capture_date)
+            print(cancellation_value_date)
+
             date_entered = request.form.get('dateentered')
             principal_change_options = request.form.get('principalChangeOptions')
             mm_deal_type = request.form.get('uncaptureddealtypeOptions')
@@ -447,79 +450,6 @@ try:
                     print("Error inserting user:", e)
                     return redirect(url_for('landingpage'))  # Ensure a response is returned
                 
-
-
-
-
-            elif calcatmm == 'Cancelled Deal':
-                deal_type_mapping = {
-                    'nncd': "NNCD",
-                    'inbr': "Treasury Bill",
-                    'inop': "Offshore Placement",
-                    'inpp': "Local Placement",
-                    'fixd': "Fixed Deposit",
-                    'inbd': "Interbank Deposit",
-                    'cctd': "Cash Cover Term Deposit",
-                }
-
-                # Extract the first 4 characters of deal_reference and convert to lowercase
-                termination_deal_type = deal_reference[:4].lower()
-
-                # Get the deal_type from the dictionary, default to "Unknown Deal Type" if not found
-                deal_type = deal_type_mapping.get(termination_deal_type, "Unknown Deal Type")
-
-                if "za" in deal_reference.lower():
-                    currency = "ZAR"
-                elif "eu" in deal_reference.lower():
-                    currency = "EUR"
-                elif "zg" in deal_reference.lower():
-                    currency = "ZWG"
-                else:
-                    currency = "USD"  
-
-                working_days_count = 0
-
-                if cancellation_value_date and cancellation_capture_date:
-                    try:
-                        # Convert string dates to datetime objects
-                        cancellation_value_date = datetime.strptime(cancellation_value_date, '%Y-%m-%d')
-                        cancellation_capture_date = datetime.strptime(cancellation_capture_date, '%Y-%m-%d')
-
-                        current_date = cancellation_value_date
-                        while current_date <= cancellation_capture_date:
-                            # Check if the current day is a weekday and not a holiday
-                            if current_date.weekday() < 5 and current_date not in holidays:
-                                working_days_count += 1
-                            # Move to the next day
-                            current_date += timedelta(days=1)
-
-                    except Exception as e:
-                        print("Error calculating working days:", e)
-                        return redirect(url_for('dashboard'))  # Handle date parsing errors
-
-                try:
-                    conn = get_db_connection()
-                    cursor = conn.cursor()
-
-                    if working_days_count == 0:
-                        insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid, comments)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                        """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid, comments))
-                    else:
-                        insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid, comments)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                        """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, cancellation_capture_date, cancellation_value_date, working_days_count-1, knockoffid, comments))
-
-                    conn.commit()
-                    return redirect(url_for('dashboard'))  # Ensure a response is returned
-
-                except Exception as e:
-                    print("Error inserting user:", e)
-                    return redirect(url_for('landingpage'))  # Ensure a response is returned
                 
             elif calcatmm == 'Out of Office TFO':
                 deal_type_mapping = {

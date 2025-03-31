@@ -2282,7 +2282,7 @@
 
         $(document).on('click', '.delete-cal-btn', function() {
             // Get the CAL ID from the button's data attribute
-            currentIdviewcal = $(this).data('id'); 
+            currentIddeletecal = $(this).data('id'); 
             $('#cal-id').text('CAL ID: ' + currentIddeletecal);
 
             // Find the closest table row
@@ -2302,20 +2302,6 @@
 
             $('#confirmationdeletecal').html(message);
         });
-
-    });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         let currentIdviewcal = null

@@ -597,7 +597,7 @@
                     <option id= "adminoptionchoice" value="admin" class="dropdown-item" style="font-weight: bold;color:#003366 ;">TREASURY MIDDLE OFFICE</option>
                 </select>
             </div>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="width: max-content;"> <i class="bi bi-door-closed-fill" style="margin-right: 7px;"></i> LOGOUT</button>
+            <button type="button" class="btn btn-primary" id="logout" style="width: max-content;"> <i class="bi bi-door-closed-fill" style="margin-right: 7px;"></i> LOGOUT</button>
 
         </header>
 
@@ -652,7 +652,6 @@
 
 
                 <div class="tab-pane fade show" id="my-CAL-log-tab">
-                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exportmycalreportModal" style="width: max-content;"><i class="bi bi-files-alt"></i>   Export CAL Report</button>
 
                     <div class="container mt-5">
                         <div class="container2" style="overflow-y: auto;">
@@ -1426,6 +1425,9 @@
             window.location.href = "/export_excel_alltime_deleted_callog";
         });
 
+        $("#logout").click(function() {
+            window.location.href = "/logout";
+        });
 
         $("#formatexcelcallogreportexport").click(function() {
             const priorityFocus = $("#priorityfocus").val();
@@ -2400,7 +2402,7 @@
                 <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
                 <strong>Supposed Approver: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${supposedapprover}</span></strong> <br><br>
                 <strong>Approver: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${approver}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2426,7 +2428,7 @@
                 <strong>Termination Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${terminationdate}</span></strong> <br><br>
                 <strong>Termination Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
                 <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2453,7 +2455,7 @@
                 <strong>Termination Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${cancellationdate}</span></strong> <br><br>
                 <strong>Termination Value Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
                 <strong>Days Delayed: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${daysdelayed}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2475,7 +2477,7 @@
                 <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
                 <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
                 <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2502,7 +2504,7 @@
                 <strong>Deal Reference No: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealreference}</span></strong> <br><br>
                 <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
                 <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2518,6 +2520,7 @@
                 counterparty = row.find('td').eq(11).text();
                 comments =  row.find('td').eq(17).text(); 
                 valuedate =  row.find('td').eq(10).text(); 
+                count =  row.find('td').eq(16).text(); 
 
 
                 var message = `<strong>Logger: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${logger}</span></strong> 
@@ -2527,8 +2530,9 @@
                 <strong>Supposed Capture Date: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${valuedate}</span></strong> <br><br>
                 <strong>Deal Type: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealtype}</span></strong> <br><br>
                 <strong>Currency: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${dealcurrency}</span></strong> <br><br>
+                <strong>Count: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${count}</span></strong> <br><br>
                 <strong>Counterparty: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${counterparty}</span></strong> <br><br>
-                <strong>Cooments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
+                <strong>Comments/Notes: <span style="background-color:#e9f1fb;padding:7px; border-radius:15px;">${comments}</span></strong>`
 
                 ;
             }
@@ -2565,7 +2569,7 @@
             searching: true,     // Enable search
             ordering: true,      // Enable sorting
             info: true,          // Show table information
-            pageLength: 9,       // Force max 5 entries per page
+            pageLength: 10,       // Force max 5 entries per page
             lengthChange: false, // Disable entries per page dropdown
             order: [[0, 'desc']] // Sort first column (index 0) in descending order
         });

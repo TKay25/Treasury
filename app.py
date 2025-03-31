@@ -273,29 +273,29 @@ try:
                     if knockoffid:
                         if working_days_count == 0 :
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid, comments))
                         else:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, termination_capture_date, termination_value_date, working_days_count-1 , knockoffid))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, termination_capture_date, termination_value_date, working_days_count-1 , knockoffid, comments))
                     else:
                         if working_days_count == 0:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, comments))
                         else:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, termination_capture_date, termination_value_date, working_days_count-1))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, termination_capture_date, termination_value_date, working_days_count-1, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -315,10 +315,10 @@ try:
                     cursor = conn.cursor()
                     dealcount = int(dealcount)
                     insert_query = f"""
-                    INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealType, Currency, ValueDate, Count, Counterparty)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealType, Currency, ValueDate, Count, Counterparty, comments)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """
-                    cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, mm_deal_type, currency, uncapturedsupposedcapture, dealcount, counterparty_mm))
+                    cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, mm_deal_type, currency, uncapturedsupposedcapture, dealcount, counterparty_mm, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -383,16 +383,16 @@ try:
 
                     if working_days_count == 0:
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid, comments))
                     else:
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, cancellation_capture_date, cancellation_value_date, working_days_count-1, knockoffid))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, cancellation_capture_date, cancellation_value_date, working_days_count-1, knockoffid, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -435,10 +435,10 @@ try:
                     cursor = conn.cursor()
 
                     insert_query = f"""
-                    INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, ValueDate)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, ValueDate, comments)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """
-                    cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, unmatureddealvaluedate))
+                    cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, unmatureddealvaluedate, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -503,16 +503,16 @@ try:
 
                     if working_days_count == 0:
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, KnockoffCALid, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, knockoffid, comments))
                     else:
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, cancellation_capture_date, cancellation_value_date, working_days_count-1, knockoffid))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, cancellation_capture_date, cancellation_value_date, working_days_count-1, knockoffid, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -609,29 +609,29 @@ try:
                     if knockoffid:
                         if working_days_count == 0:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, Approver, ValueDate, SupposedApprover, KnockoffCALid)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                            """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, approver, backdated_capture_date, supposed_approver, knockoffid))
-                        else:
-                            insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, Approver, SupposedApprover,KnockoffCALid)
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, Approver, ValueDate, SupposedApprover, KnockoffCALid, comments)
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, supposedoutofofficecapturedate, working_days_count-1, approver, supposed_approver, knockoffid))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, approver, backdated_capture_date, supposed_approver, knockoffid, comments))
+                        else:
+                            insert_query = f"""
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, Approver, SupposedApprover,KnockoffCALid, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            """
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, supposedoutofofficecapturedate, working_days_count-1, approver, supposed_approver, knockoffid, comments))
                     else:
                         if working_days_count == 0:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, Approver, SupposedApprover, ValueDate)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, DaysDelay, Approver, SupposedApprover, ValueDate, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, approver, supposed_approver, backdated_capture_date))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, working_days_count, approver, supposed_approver, backdated_capture_date, comments))
                         else:
                             insert_query = f"""
-                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, Approver, SupposedApprover)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, Approver, SupposedApprover, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
-                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, supposedoutofofficecapturedate, working_days_count-1, approver, supposed_approver))
+                            cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, supposedoutofofficecapturedate, working_days_count-1, approver, supposed_approver, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -729,18 +729,18 @@ try:
                     if knockoffid:
 
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, KnockoffCALid, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, backdatedcapturevaluedate, working_days_count-1, knockoffid))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, backdatedcapturevaluedate, working_days_count-1, knockoffid, comments))
 
                     else:
 
                         insert_query = f"""
-                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        INSERT INTO {table_name_mm} (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, DealReference, DealType, Currency, EffectedDate, ValueDate, DaysDelay, comments)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                         """
-                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, backdatedcapturevaluedate, working_days_count-1))
+                        cursor.execute(insert_query, (today_date, empid, username, market, calcatmm, deal_reference, deal_type, currency, backdated_capture_date, backdatedcapturevaluedate, working_days_count-1, comments))
 
                     conn.commit()
                     return redirect(url_for('dashboard'))  # Ensure a response is returned
@@ -824,7 +824,7 @@ try:
                     print(allmmcallog)
 
                     allmmcallog = allmmcallog.sort_values(by="CAL ID", ascending=False)
-
+                    delayed = allmmcallog[allmmcallog['DAYS DELAYED'] > 0]
                     print(allmmcallog)
 
                     if focus == "alltime":
@@ -832,7 +832,8 @@ try:
                         # Create an in-memory Excel file
                         output = BytesIO()
                         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                            allmmcallog.to_excel(writer, index=False, sheet_name=f'CAL REPORT {today_date}')
+                            allmmcallog.to_excel(writer, index=False, sheet_name=f'ALL CAL {today_date}')
+                            delayed.to_excel(writer, index=False, sheet_name=f'DELAYED CAL {today_date}')
 
                         output.seek(0)
                         print('done')

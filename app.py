@@ -9,6 +9,13 @@ import numpy as np
 from datetime import datetime, timedelta
 import re
 from io import BytesIO, StringIO
+import matplotlib.pyplot as plt
+import seaborn as sns
+from openpyxl.drawing.image import Image
+import os
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
+
 
 
 # Flask app setup
@@ -786,7 +793,8 @@ try:
                             (pd.to_datetime(allmmcallog['VALUE DATE']) >= start_date) & 
                             (pd.to_datetime(allmmcallog['VALUE DATE']) <= end_date)
                         ]
-                        
+
+
                         output = BytesIO()
                         with pd.ExcelWriter(output, engine='openpyxl') as writer:
                             filtered_df.to_excel(writer, index=False, sheet_name=f'CAL REPORT {end_date}')
@@ -802,6 +810,444 @@ try:
                             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                         )
                     
+
+                    elif focus == "daily":
+                        # Extract the day from either VALUE DATE or EFFECTED DATE
+                        def get_current_month_day(row):
+                            # Check VALUE DATE first
+                            val_date = pd.to_datetime(row['VALUE DATE'])
+                            if val_date.month == current_month and val_date.year == current_year:
+                                return val_date.day
+                            
+                            eff_date = pd.to_datetime(row['EFFECTED DATE'])
+                            if eff_date.month == current_month and eff_date.year == current_year:
+                                return eff_date.day
+                            
+                            return None  # Exclude dates outside current month
+                        
+                        asat_date = request.args.get('asatDate')
+
+                        asat_date2 = pd.to_datetime(asat_date)
+
+                        # Get previous business day
+                        previous_business_day = asat_date2 - pd.offsets.BDay(1)
+
+                        # If you need it as a string in the same format
+                        previous_business_day_str = previous_business_day.strftime('%Y-%m-%d')
+
+
+                        filtered_df1 = allmmcallog[
+                            ((allmmcallog['AMENDMENT'] == 'Unmatured Deal') | (allmmcallog['AMENDMENT'] == 'Uncaptured Deal')) & 
+                            ((pd.to_datetime(allmmcallog['VALUE DATE']) == asat_date) | (pd.to_datetime(allmmcallog['VALUE DATE']) == previous_business_day_str))
+                        ]
+
+                        filtered_df2 = allmmcallog[
+                            ((allmmcallog['AMENDMENT'] != 'Unmatured Deal') | (allmmcallog['AMENDMENT'] != 'Uncaptured Deal')) & 
+                            ((pd.to_datetime(allmmcallog['EFFECTED DATE']) == asat_date) | (pd.to_datetime(allmmcallog['VALUE DATE']) == previous_business_day_str))
+                        ]
+
+                        combined_df = filtered_df1._append(filtered_df2, ignore_index=True)
+
+                        # Create filters for both dates
+                        asat_date_filter = ((pd.to_datetime(allmmcallog['VALUE DATE']) == asat_date2) |(pd.to_datetime(allmmcallog['EFFECTED DATE']) == asat_date2))
+
+                        prev_date_filter = ((pd.to_datetime(allmmcallog['VALUE DATE']) == previous_business_day) |(pd.to_datetime(allmmcallog['EFFECTED DATE']) == previous_business_day))
+
+                        # Group by amendment and sum COUNT for each date
+                        asat_date_totals = allmmcallog[asat_date_filter].groupby('AMENDMENT')['COUNT'].sum().reset_index()
+                        prev_date_totals = allmmcallog[prev_date_filter].groupby('AMENDMENT')['COUNT'].sum().reset_index()
+
+                        # Merge the totals
+                        summary = pd.merge(
+                            asat_date_totals.rename(columns={'COUNT': str(asat_date2)}),
+                            prev_date_totals.rename(columns={'COUNT': str(previous_business_day)}),
+                            on='AMENDMENT',
+                            how='outer'
+                        ).fillna(0)
+                        # Calculate MTD (Month-to-Date) totals
+                        current_month = asat_date2.month
+                        current_year = asat_date2.year
+
+                        mtd_filter = (
+                            (pd.to_datetime(allmmcallog['VALUE DATE']).dt.month == current_month) &
+                            (pd.to_datetime(allmmcallog['VALUE DATE']).dt.year == current_year)
+                        ) | (
+                            (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.month == current_month) &
+                            (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.year == current_year)
+                        )
+
+                        mtd_totals = allmmcallog[mtd_filter].groupby('AMENDMENT')['COUNT'].sum().reset_index()
+
+                        # Add MTD to summary
+                        summary = pd.merge(
+                            summary,
+                            mtd_totals,
+                            on='AMENDMENT',
+                            how='left'
+                        ).fillna(0)
+
+                        # Rename columns and calculate totals
+                        summary = summary.rename(columns={
+                            'COUNT': 'MTD'
+                        })
+
+                        # Reorder columns
+                        final_columns = [
+                            'AMENDMENT',
+                            f'{asat_date2}',
+                            f'{previous_business_day}',
+                            'MTD'
+                        ]
+                        summary = summary[final_columns]
+                        summary = summary.sort_values(f'{asat_date2}', ascending=False)
+
+                        asat_date_totals = allmmcallog[asat_date_filter].groupby(['AMENDMENT', 'DEAL TYPE'])['COUNT'].sum().reset_index()
+                        prev_date_totals = allmmcallog[prev_date_filter].groupby(['AMENDMENT', 'DEAL TYPE'])['COUNT'].sum().reset_index()
+
+                        # Create MTD totals by Amendment and Deal Type
+                        mtd_filter = (
+                            (pd.to_datetime(allmmcallog['VALUE DATE']).dt.month == current_month) &
+                            (pd.to_datetime(allmmcallog['VALUE DATE']).dt.year == current_year)
+                        ) | (
+                            (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.month == current_month) &
+                            (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.year == current_year)
+                        )
+                        mtd_totals = allmmcallog[mtd_filter].groupby(['AMENDMENT', 'DEAL TYPE'])['COUNT'].sum().reset_index()
+
+                        # Merge all totals
+                        summary_by_dealtype = pd.merge(
+                            asat_date_totals.rename(columns={'COUNT': str(asat_date2)}),
+                            prev_date_totals.rename(columns={'COUNT': str(previous_business_day)}),
+                            on=['AMENDMENT', 'DEAL TYPE'],
+                            how='outer'
+                        ).fillna(0)
+
+                        summary_by_dealtype = pd.merge(
+                            summary_by_dealtype,
+                            mtd_totals.rename(columns={'COUNT': 'MTD'}),
+                            on=['AMENDMENT', 'DEAL TYPE'],
+                            how='left'
+                        ).fillna(0)
+
+                        # Reorder columns
+                        final_columns = [
+                            'AMENDMENT', 
+                            'DEAL TYPE',
+                            str(asat_date2),
+                            str(previous_business_day),
+                            'MTD'
+                        ]
+
+
+                        summary_by_dealtype = summary_by_dealtype[final_columns]
+
+                        # Sort by Amendment then by asat_date count
+                        summary_by_dealtype = summary_by_dealtype.sort_values(
+                            ['AMENDMENT', str(asat_date2)], 
+                            ascending=[True, False]
+                        )
+
+
+                        def format_timestamp_column(col_name):
+                            try:
+                                # Parse timestamp (e.g., "2025-04-01 00:00:00")
+                                dt = datetime.strptime(col_name, "%Y-%m-%d %H:%M:%S")
+                                # Return formatted date (e.g., "01 April 2025")
+                                return dt.strftime("%d %B %Y")  
+                            except ValueError:
+                                return col_name  # Return unchanged if not a timestamp
+
+                        # Apply renaming
+                        summary = summary.rename(columns=format_timestamp_column)
+                        # Sort by TOTAL descending
+                        print(summary)
+
+                        month_data = allmmcallog[
+                            (
+                                (pd.to_datetime(allmmcallog['VALUE DATE']).dt.month == current_month) & 
+                                (pd.to_datetime(allmmcallog['VALUE DATE']).dt.year == current_year
+                            ) | (
+                                (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.month == current_month) & 
+                                (pd.to_datetime(allmmcallog['EFFECTED DATE']).dt.year == current_year
+                            )))
+                        ].copy()                        
+
+
+                        month_data['DAY'] = month_data.apply(get_current_month_day, axis=1)
+
+                        print(month_data)
+                        # Group by Amendment and Day
+                        daily_counts = month_data.groupby(['AMENDMENT', 'DAY'])['COUNT'].sum().reset_index()
+
+                        # Create the visualization
+                        plt.figure(figsize=(14, 7))
+
+                        # Define your custom color palette
+                        custom_palette = {
+                            # Uncaptured Deal (red shades)
+                            ('Uncaptured Deal'): '#8B0000',        # Darkest Red
+                            ('Backdated Capture'): '#00008B',      # Dark Blue
+                            ('Unmatured Deal'): '#808080',         # Grey
+                            ('Other Amendment'): '#A9A9A9'       # Dark Grey
+                        }
+
+                        plt.figure(figsize=(12, 8))  # Increased height to accommodate table
+
+                        # Create the bar plot
+                        ax1 = plt.subplot2grid((10, 1), (0, 0), rowspan=6)
+                        sns.barplot(
+                            data=daily_counts,
+                            x='DAY',
+                            y='COUNT',
+                            hue='AMENDMENT',
+                            palette=custom_palette,
+                            estimator=sum,
+                            errorbar=None,
+                            ax=ax1
+                        )
+
+                        # Format the plot
+                        ax1.set_title(f'Cancelled, Amended, Late trades, Backdated and Limit breaches ({asat_date2.strftime("%d %B %Y")})', fontsize=10)
+                        ax1.set_xlabel('Day of Month', fontsize=9)
+                        ax1.set_ylabel('Total Count', fontsize=9)
+                        ax1.tick_params(labelsize=8)
+                        ax1.legend(
+                            title='Amendment Types',
+                            bbox_to_anchor=(1.02, 1),
+                            loc='upper left',
+                            fontsize=8
+                        )
+
+                        # Create table data - pivot to show amendments vs days
+                        table_data = daily_counts.pivot_table(
+                            index='AMENDMENT',
+                            columns='DAY',
+                            values='COUNT',
+                            aggfunc='sum',
+                            fill_value=0
+                        )
+
+                        # Add table below the plot
+                        ax2 = plt.subplot2grid((10, 1), (7, 0), rowspan=3)
+                        ax2.axis('off')  # Hide axes
+                        table = ax2.table(
+                            cellText=table_data.values,
+                            rowLabels=table_data.index,
+                            colLabels=table_data.columns,
+                            cellLoc='center',
+                            loc='center',
+                            colWidths=[0.1]*len(table_data.columns))
+
+                        table.auto_set_font_size(False)
+                        table.set_fontsize(8)
+                        table.scale(1, 1.2)  # Scale cell sizes
+
+                        # Highlight header row
+                        for (row, col), cell in table.get_celld().items():
+                            if row == 0:
+                                cell.set_text_props(weight='bold')
+                                cell.set_facecolor('#003366')  # Dark blue header
+                                cell.set_text_props(color='white')
+
+                        plt.tight_layout()
+
+                        # Save and export to Excel
+                        img_buffer1 = BytesIO()
+                        plt.savefig(img_buffer1, format='png', dpi=150, bbox_inches='tight')
+                        plt.close()
+
+
+
+
+                        summary_by_dealtype = summary_by_dealtype.rename(columns=format_timestamp_column)
+                        # Sort by TOTAL descending
+                        print(summary_by_dealtype)
+
+                        mtd_data = allmmcallog[mtd_filter].copy()
+
+
+                        
+
+
+
+
+                        mtd_data['DAY'] = mtd_data.apply(get_current_month_day, axis=1)
+
+                        # Drop rows where DAY is None (dates outside current month)
+                        mtd_data = mtd_data.dropna(subset=['DAY'])
+
+                        # Convert DAY to integer
+                        mtd_data['DAY'] = mtd_data['DAY'].astype(int)
+
+                        # Now group by AMENDMENT and DAY
+                        # Group by Amendment, Deal Type, and Day
+                        daily_counts = mtd_data.groupby(['AMENDMENT', 'DEAL TYPE', 'DAY'])['COUNT'].sum().reset_index()
+
+
+                        # Create a combined label column for the legend (optional but helpful)
+                        daily_counts['AMENDMENT_DEALTYPE'] = (
+                            daily_counts['AMENDMENT'] + " (" + daily_counts['DEAL TYPE'] + ")"
+                        )
+
+
+                        plt.figure(figsize=(8, 4))
+
+                        # Define color palette
+                        color_palette = {
+                            # Uncaptured Deal (red shades)
+                            ('Uncaptured Deal', 'NNCD'): '#8B0000',        # Darkest Red
+                            ('Uncaptured Deal', 'Treasury Bill'): '#DC143C',  # Crimson
+                            ('Uncaptured Deal', 'FX Swap'): '#FF6347',     # Tomato
+                            ('Uncaptured Deal', 'Other'): '#FFA07A',       # Light Salmon
+                            
+                            # Backdated Capture (blue shades)
+                            ('Backdated Capture', 'NNCD'): '#00008B',      # Dark Blue
+                            ('Backdated Capture', 'Treasury Bill'): '#1E90FF',  # Dodger Blue
+                            ('Backdated Capture', 'FX Swap'): '#4682B4',   # Steel Blue
+                            ('Backdated Capture', 'Other'): '#87CEFA',     # Light Sky Blue
+                            
+                            # Other amendments
+                            ('Unmatured Deal', 'IRS'): '#808080',         # Grey
+                            ('Other Amendment', 'Other'): '#A9A9A9'       # Dark Grey
+                        }
+
+                        # Get unique days and amendments
+                        days = sorted(daily_counts['DAY'].unique())
+                        amendments = daily_counts['AMENDMENT'].unique()
+
+                        # Set up bar positions
+                        bar_width = 0.8 / len(amendments)
+                        x_positions = np.arange(len(days))
+
+                        # Create legend handles and labels explicitly
+                        legend_handles = []
+                        legend_labels = []
+
+                        # Plot each amendment
+                        for i, amendment in enumerate(amendments):
+                            amendment_data = daily_counts[daily_counts['AMENDMENT'] == amendment]
+                            bottom = np.zeros(len(days))
+                            
+                            # Plot each deal type
+                            for deal_type in daily_counts['DEAL TYPE'].unique():
+                                subset = amendment_data[amendment_data['DEAL TYPE'] == deal_type]
+                                if not subset.empty:
+                                    counts = subset.groupby('DAY')['COUNT'].sum().reindex(days, fill_value=0)
+                                    color = color_palette.get((amendment, deal_type), '#D3D3D3')
+                                    
+                                    # Create the bar plot
+                                    bar = plt.bar(
+                                        x=x_positions + i*bar_width,
+                                        height=counts,
+                                        bottom=bottom,
+                                        width=bar_width,
+                                        color=color
+                                    )
+                                    
+                                    # Add to legend only once per combination
+                                    if (amendment, deal_type) in color_palette:
+                                        legend_handles.append(bar)
+                                        legend_labels.append(f"{amendment} - {deal_type}")
+                                    
+                                    bottom += counts
+
+                        # Formatting
+                        plt.title('CAL BY DEAL TYPE')
+                        plt.xlabel(f'DAY OF {asat_date2.strftime("%B %Y")}')
+                        plt.ylabel('COUNT')
+                        plt.xticks(x_positions + bar_width*(len(amendments)-1)/2, days)
+
+                        # Create the legend with all amendment-deal type combinations
+                        plt.legend(
+                            handles=legend_handles,
+                            labels=legend_labels,
+                            title='AMENDMENT - DEAL TYPE',
+                            bbox_to_anchor=(0.5, -0.2),  # 0.5 = center, -0.2 = below graph
+                            loc='upper center',
+                            fontsize=8,
+                            ncol=3,  # Adjust number of columns as needed
+                            frameon=True
+                        )
+
+                        # Adjust layout to make space for legend
+                        plt.tight_layout(rect=[0, 0.1, 1, 1])  # rect=[left, bottom, right, top]
+
+                        plt.grid(axis='y', alpha=0.3)
+                        plt.tight_layout()
+
+                        # Save and export to Excel
+                        img_buffer = BytesIO()
+                        plt.savefig(img_buffer, format='png', dpi=150, bbox_inches='tight')
+                        plt.close()
+
+                        output = BytesIO()
+                        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                            combined_df.to_excel(writer, index=False, sheet_name='CAL REPORT')
+                            summary.to_excel(writer, index=False, sheet_name='CAL Dashboard')
+                            # Write summary DataFrame starting at A6
+                            summary_by_dealtype.to_excel(writer, index=False, sheet_name='CAL Dashboard', startrow=5, header=True)
+                            
+                            workbook = writer.book
+                            worksheet = workbook['CAL Dashboard']
+
+                            img = Image(img_buffer1)
+                            img.width = 700
+                            img.height = 400
+                            img.anchor = 'F2'
+                            worksheet.add_image(img)
+                            
+                            img = Image(img_buffer)
+                            img.width = 700
+                            img.height = 400
+                            img.anchor = 'R2'
+                            worksheet.add_image(img)
+
+                            header_fmt = {
+                                'fill': PatternFill(
+                                    start_color='FF003366',  # Dark blue background (ARGB)
+                                    end_color='FF003366',
+                                    fill_type='solid'
+                                ),
+                                'font': Font(
+                                    color='FFFFFFFF',  # White text (ARGB)
+                                    bold=True,
+                                    name='Calibri',
+                                    size=11
+                                ),
+                                'border': Border(
+                                    left=Side(style='thin'),
+                                    right=Side(style='thin'),
+                                    top=Side(style='thin'),
+                                    bottom=Side(style='thin')
+                                ),
+                                'alignment': Alignment(
+                                    horizontal='center',
+                                    vertical='center'
+                                )
+                            }
+
+                            # Apply to header row (row 6)
+                            for col in range(1, len(summary.columns) + 1):
+                                cell = worksheet.cell(row=1, column=col)
+                                for attr, value in header_fmt.items():
+                                    setattr(cell, attr, value)
+
+                            for col in range(1, len(summary_by_dealtype.columns) + 1):
+                                cell = worksheet.cell(row=6, column=col)
+                                for attr, value in header_fmt.items():
+                                    setattr(cell, attr, value)
+
+
+                        output.seek(0)
+                        return send_file(
+                            output,
+                            as_attachment=True,
+                            download_name=f'CAL Log Report as at {asat_date}.xlsx',
+                            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        )
+
+
+
                     else:
                         return jsonify({'success': False, 'message': 'Invalid focus parameter'}), 400
 
@@ -975,8 +1421,8 @@ try:
                             INSERT INTO {table_name_mm} 
                             (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, 
                             DealReference, DealType, Currency, EffectedDate, ValueDate, 
-                            DaysDelay, comments)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            DaysDelay, comments, count)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                             """
                             
                             cursor.execute(insert_query, (
@@ -991,7 +1437,8 @@ try:
                                 backdated_capture_date_str,
                                 backdatedcapturevaluedate_str,
                                 working_days_count - 1,
-                                "Imported via Excel paste"
+                                "Imported via Excel paste",
+                                1
                             ))
                             
                             conn.commit()

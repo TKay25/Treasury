@@ -878,8 +878,9 @@
                         <label for="priorityfocus" style="margin-right: 10px;"><b>Select Period of Focus:</b></label>
                         <select id="priorityfocus" name="priorityfocus" class="form-control form-control-blue" style="width: 50%;border-radius: 15px;">
                             <option value="">--Select Option--</option>
+                            <option value="daily">Daily</option>
+                            <option value="customcalenders">From, To</option>
                             <option value="alltime">All Time</option>
-                            <option value="customcalenders">Custom</option>
                         </select>
                     </div>
                     <div id="customexportdates" style="display: none;margin-top: 8px;">
@@ -891,6 +892,14 @@
                         <div class="form-group" style="display: flex; align-items: center; justify-content: center;">
                             <label for="customexportendDate" ><b>End Date:</b></label>
                             <input type="date" id="customexportendDate" name="customexportendDate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
+                        </div>
+
+                    </div>
+
+                    <div id="customexportdatesdaily" style="display: none;margin-top: 8px;">
+                        <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <label for="customexportasatdate"><b>As at Date:</b></label>
+                            <input type="date" id="customexportasatdate" name="customexportasatdate" style="padding: 6px; border-radius: 10px; color: white; background-color: #003366; width: 150px; -webkit-appearance: none; -moz-appearance: none; appearance: none; margin-left: 10px;">
                         </div>
 
                     </div>
@@ -1797,7 +1806,7 @@
             }
             
             document.getElementById('tableData').value = tsvData;
-            
+
         });
 
 
@@ -1835,8 +1844,19 @@
                 
                 window.location.href = `/export_excel_alltime_callog?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&priorityFocus=${encodeURIComponent(priorityFocus)}`;
             }
+
+            else if (priorityFocus === "daily") {
+                const asatDate = $("#customexportasatdate").val();
+                
+                if (!asatDate) {
+                    alert("Please select an `as at` date.");
+                    return;
+                }
+                
+                window.location.href = `/export_excel_alltime_callog?asatDate=${encodeURIComponent(asatDate)}&priorityFocus=${encodeURIComponent(priorityFocus)}`;
+            }
             else {
-                alert("Please select either 'All Time' or specify custom dates.");
+                alert("Please select a Period of Focus option.");
             }
         });
 
@@ -2663,17 +2683,28 @@
             if ($(this).val() === "customcalenders") {
                 $("#customexportdates").show(); // Hide Money Market Deal Reference container
                 $("#callogexportformats").addClass("d-flex").show();
-    
-                
+                $("#customexportdatesdaily").hide(); // Hide Money Market Deal Reference container
+ 
+                         
             }
             else if ($(this).val() === "alltime") {
-                $("#customexportdates").hide(); // Hide Money Market Deal Reference container
+                $("#customexportdates").hide(); 
                 $("#callogexportformats").addClass("d-flex").show();
-    
+                $("#customexportdatesdaily").hide(); // Hide Money Market Deal Reference container
+  
                 
-            }  else {
+            } 
+            else if ($(this).val() === "daily") {
+                $("#customexportdates").hide(); 
+                $("#callogexportformats").addClass("d-flex").show();
+                $("#customexportdatesdaily").show(); // Hide Money Market Deal Reference container
+
+                
+            }       
+            else {
                 $("#customexportdates").hide(); // Show Money Market Deal Reference container
                 $("#callogexportformats").removeClass("d-flex").hide();
+                $("#customexportdatesdaily").hide(); // Hide Money Market Deal Reference container
             }
         });
 

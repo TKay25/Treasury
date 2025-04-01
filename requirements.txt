@@ -4,3 +4,6 @@ pandas
 openpyxl
 numpy
 gunicorn
+matplotlib
+seaborn
+openpyxl

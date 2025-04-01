@@ -8,7 +8,7 @@ import openpyxl
 import numpy as np
 from datetime import datetime, timedelta
 import re
-from io import BytesIO
+from io import BytesIO, StringIO
 
 
 # Flask app setup
@@ -123,7 +123,7 @@ try:
                 print("Error inserting user:", e)
 
 
-        #create_user('tzvakasikwa','55335')
+        #create_user('rmabika','55337')
 
         def run1(empid):
             global today_date
@@ -866,6 +866,174 @@ try:
                     conn.close()  # Always close the connection
     
 
+        @app.route('/excel_paste_import', methods=['POST'])
+        def excel_paste_import():
+            global table_name_mm, today_date
+            tsv_data = request.form['tableData']
+
+
+              
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+
+                df = pd.read_csv(StringIO(tsv_data), sep='\t', header=None)
+                df = df.dropna(how='all').dropna(axis=1, how='all')
+                print(df)
+
+                # Convert to datetime and filter
+                df[1] = pd.to_datetime(df[1], errors='coerce')  # Column index 1
+                df[2] = pd.to_datetime(df[2], errors='coerce')  # Column index 2
+                filtered_df = df[df[2] > df[1]].copy()
+                filtered_df = filtered_df.dropna(subset=[1, 2], how='any')
+                print(filtered_df)
+
+                query = f"SELECT DealReference FROM {table_name_mm};"
+                cursor.execute(query)
+                rows = cursor.fetchall()
+
+                mmlog = pd.DataFrame(rows, columns=["DEAL REFERENCE"])
+                print(mmlog)
+
+
+                cursor.close()
+                conn.close()
+
+                values_to_remove = set(mmlog['DEAL REFERENCE'])
+
+                filtered_df = filtered_df[~filtered_df.iloc[:, 0].isin(values_to_remove)]
+                print(filtered_df)
+
+                total_rows = len(filtered_df)
+                success_count = 0
+                error_rows = []
+
+                for index, row in filtered_df.iterrows():
+                    try:
+                        # Extract values from columns
+                        deal_reference = str(row[0]) if pd.notna(row[0]) else None
+                        backdatedcapturevaluedate = row[1]  # Already a Timestamp
+                        backdated_capture_date = row[2]  # Already a Timestamp
+
+                        # Skip if any required field is empty
+                        if not all([deal_reference, backdatedcapturevaluedate, backdated_capture_date]):
+                            error_rows.append(f"Row {index+1}: Missing required fields")
+                            continue
+                        
+                        # Convert Timestamps to strings in YYYY-MM-DD format
+                        try:
+                            backdatedcapturevaluedate_str = backdatedcapturevaluedate.strftime('%Y-%m-%d')
+                            backdated_capture_date_str = backdated_capture_date.strftime('%Y-%m-%d')
+                        except Exception as e:
+                            error_rows.append(f"Row {index+1}: Date format error - {str(e)}")
+                            continue
+                        
+                        # Process deal reference
+                        deal_type_mapping = {
+                            'nncd': "NNCD",
+                            'inbr': "Treasury Bill",
+                            'inop': "Offshore Placement",
+                            'inpp': "Local Placement",
+                            'fixd': "Fixed Deposit",
+                            'inbd': "Interbank Deposit",
+                            'cctd': "Cash Cover Term Deposit",
+                            'pnot': "Promissory Note",
+                            'fixp': "Fixed Treasury Placement",
+                        }
+                        
+                        backdated_deal_type = deal_reference[:4].lower()
+                        deal_type = deal_type_mapping.get(backdated_deal_type, "Unknown Deal Type")
+                        
+                        # Determine currency
+                        if "za" in deal_reference.lower():
+                            currency = "ZAR"
+                        elif "eu" in deal_reference.lower():
+                            currency = "EUR"
+                        elif "zg" in deal_reference.lower():
+                            currency = "ZWG"
+                        else:
+                            currency = "USD"
+                        
+                        # Calculate working days
+                        try:
+                            working_days_count = 0
+                            current_date = backdatedcapturevaluedate
+                            while current_date <= backdated_capture_date:
+                                if current_date.weekday() < 5:  # Monday-Friday
+                                    working_days_count += 1
+                                current_date += timedelta(days=1)
+                        except Exception as e:
+                            error_rows.append(f"Row {index+1}: Date calculation error - {str(e)}")
+                            continue
+                        
+                        # Database insertion
+                        try:
+                            conn = get_db_connection()
+                            cursor = conn.cursor()
+
+                            insert_query = f"""
+                            INSERT INTO {table_name_mm} 
+                            (DateLogged, CALLoggerid, CALLogger, Market, MarketCategory, 
+                            DealReference, DealType, Currency, EffectedDate, ValueDate, 
+                            DaysDelay, comments)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            """
+                            
+                            cursor.execute(insert_query, (
+                                today_date,
+                                session.get('empid'),
+                                session.get('username'),
+                                'Money Market',
+                                'Backdated Capture',
+                                deal_reference,
+                                deal_type,
+                                currency,
+                                backdated_capture_date_str,
+                                backdatedcapturevaluedate_str,
+                                working_days_count - 1,
+                                "Imported via Excel paste"
+                            ))
+                            
+                            conn.commit()
+                            success_count += 1
+                            
+                        except Exception as e:
+                            error_rows.append(f"Row {index+1}: Database error - {str(e)}")
+                            if 'conn' in locals():
+                                conn.rollback()
+                        finally:
+                            if 'conn' in locals():
+                                conn.close()
+                                
+                    except Exception as e:
+                        error_rows.append(f"Row {index+1}: Processing error - {str(e)}")
+                
+                # Prepare JavaScript response
+                js_script = f"""
+                <script>
+                    alert("Processing complete!\\n\\nSuccessfully processed {success_count} of {total_rows} rows");
+                """
+                
+                if error_rows:
+                    error_str = "\\n\\n".join(error_rows)
+                    js_script += f"""
+                    alert(`The following errors occurred:\\n\\n{error_str}`);
+                    """
+                
+                js_script += """
+                    window.location.href = '/dashboard';
+                </script>
+                """
+                
+                return js_script
+                
+            except Exception as e:
+                return f"""
+                <script>
+                    alert("Fatal error during processing: {str(e)}");
+                    window.location.href = '/dashboard';
+                </script>
+                """
 
 
         @app.route('/dashboard')
